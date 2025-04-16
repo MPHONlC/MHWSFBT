@@ -2,8 +2,7 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script
-@echo off
-set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/MHWSaveFileBackupTool.bat"
+set "verifiedScriptURL=https://raw.githubusercontent.com/YourGitHubUsername/YourRepoName/main/MHWSaveFileBackupTool.bat"
 set "verifiedScriptPath=%temp%\MHWSaveFileBackupTool_verified.bat"
 set "currentScriptPath=%~f0"
 set "verificationPassed=false"
@@ -14,8 +13,13 @@ if not exist "%verifiedScriptPath%" (
     timeout /t 5 >nul
     exit /b
 )
-fc "%currentScriptPath%" "%verifiedScriptPath%" >nul
-if %errorlevel%==0 (
+for /f "delims=" %%H in ('certutil -hashfile "%currentScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
+    set "currentHash=%%H"
+)
+for /f "delims=" %%H in ('certutil -hashfile "%verifiedScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
+    set "verifiedHash=%%H"
+)
+if "%currentHash%" == "%verifiedHash%" (
     set "verificationPassed=true"
 )
 if not "%verificationPassed%"=="true" (
