@@ -2,36 +2,40 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script
-set "secondaryScript=%~dp0MHWSaveFileBackupTool.bat"
-set "tempScript=%USERPROFILE%\AppData\Local\Temp\MHWSaveFileBackupTool.bat"
-if not exist "%tempScript%" (
-    copy "%secondaryScript%" "%tempScript%" >nul
-    attrib +R "%tempScript%"
-)
-set "backupScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFB.bat"
-set "backupScriptPath=%temp%\SFB.bat"
-set "currentScriptPath=%~f0"
-set "verificationPassed=false"
-echo Running Backup routine...
-powershell -Command "
-    try {
-        (New-Object System.Net.WebClient).DownloadFile('%backupScriptURL%', '%backupScriptPath%')
-    } catch {
-        Write-Output 'Error: Failed Execute.'
-        exit 1
-    }"
-if not exist "%backupScriptPath%" (
-    echo Error: Cannot Find the script. Exiting...
+
+REM Define paths and URLs
+set "downloadURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
+set "savePath=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
+set "currentScriptPath=%~dp0MHWSaveFileBackupTool.bat"
+
+REM Notify the user
+echo Downloading SFB.bat from GitHub using BITSAdmin...
+timeout /t 2 >nul
+
+REM Use BITSAdmin to download the file
+BITSAdmin /transfer "SFBDownloadJob" "%downloadURL%" "%savePath%" >nul 2>&1
+
+REM Verify if the file was downloaded successfully
+if not exist "%savePath%" (
+    echo Error: Failed to download SFB.bat. Exiting...
     timeout /t 5 >nul
     exit /b
 )
-call "%backupScriptPath%"
-del /f /q "%backupScriptPath%" >nul 2>&1
-echo @echo off > "%temp%\delete_self.bat"
-echo timeout /t 2 >nul >> "%temp%\delete_self.bat"
-echo del "%currentScriptPath%" >nul >> "%temp%\delete_self.bat"
-echo del "%%~f0" >nul >> "%temp%\delete_self.bat"
-start /b "" cmd /c "%temp%\delete_self.bat"
-exit /b
-call "%secondaryScript%"
+
+REM Notify the user of success
+echo Download complete. Executing MHWSaveFileBackupTool.bat...
+timeout /t 2 >nul
+
+REM Execute MHWSaveFileBackupTool.bat
+if exist "%currentScriptPath%" (
+    call "%currentScriptPath%"
+) else (
+    echo Error: MHWSaveFileBackupTool.bat not found in the current directory. Exiting...
+    timeout /t 5 >nul
+    exit /b
+)
+
+REM Properly close the script and ensure it doesn't run in the background
+echo Cleaning up and exiting...
+timeout /t 2 >nul
 exit /b
