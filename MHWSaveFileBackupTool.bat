@@ -29,6 +29,8 @@ if not "%verificationPassed%"=="true" (
     exit /b
 ) else (
     echo Verification passed. Continuing...
+	timeout /t 5 >nul
+	cls
 )
 setlocal enabledelayedexpansion
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
