@@ -2,26 +2,15 @@
 cls
 color 0A
 setlocal enabledelayedexpansion
-
-REM Define paths
 set "SFBEPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
-
-REM Check if SFBE.bat exists
 if not exist "%SFBEPath%" (
     echo Error: SFBE.bat not found in %USERPROFILE%\AppData\Local\Temp\. Ensure it exists.
     timeout /t 5 >nul
     exit /b
 )
-
-REM Disable QuickEdit mode (to prevent unintended termination by mouse clicks)
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
-
-REM Trap the exit process to run SFBE.bat
 set "trapCommand=call \"%SFBEPath%\""
-
-REM Add a registry entry for the trap command
 reg add "HKCU\Console" /v AutoRun /t REG_SZ /d "%trapCommand%" /f >nul
-
 :StartBackup
 color 0A
 title Monster Hunter Wilds : Save File Backup Script --- Starting Backup Routine...
