@@ -159,7 +159,7 @@ if %errorlevel%==0 (
     start "" "%SteamInstallDir%\steam.exe" -applaunch %GameID%
 )
 timeout /t 5 > nul
-set "secondaryScript=%~dp0SFB.bat"
+set "secondaryScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
 set "tempScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
 if not exist "%tempScript%" (
     copy "%secondaryScript%" "%tempScript%" >nul
