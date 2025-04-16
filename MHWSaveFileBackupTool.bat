@@ -255,36 +255,4 @@ title Monster Hunter Wilds : Save File Backup Script ---  Restarting Script...
 echo Restarting Script...
 timeout /t 2 /nobreak >nul
 cls
-:: --- Begin Self-Deletion Cleanup ---
-rem Check if the self-deletion block exists in the current file
-findstr /C:":: BEGIN_SELFDELETE" "%~f0" >nul
-if %errorlevel%==0 (
-    echo Initiating self-deletion cleanup of marked block...
-    timeout /t 1 >nul
-    cls
-    rem Create a temporary cleanup batch file that will process the self-modification.
-    (
-        echo @echo off
-        echo timeout /t 3 ^>nul
-        rem Set the target file writable
-        echo attrib -R "%%1"
-        rem Use PowerShell to remove lines between the markers
-        echo powershell -NoProfile -Command " ^
-            $lines = Get-Content '%%1'; $skip = $false; ^
-            $lines | ForEach-Object { if($_ -match '^:: BEGIN_SELFDELETE') { $skip = $true; continue } elseif($_ -match '^:: END_SELFDELETE') { $skip = $false; continue } if(-not $skip){$_} } ^
-            | Set-Content '%%1'"
-        rem Set the target file back to read-only
-        echo attrib +R "%%1"
-        rem Optionally update the backup copy stored in %tempScript%
-        echo attrib -R "%tempScript%"
-        echo copy "%%1" "%tempScript%" ^>nul
-        echo attrib +R "%tempScript%"
-        rem Self-delete the cleanup batch file after execution
-        echo del "%%~f0"
-    ) > "%temp%\cleanup.bat"
-    rem Start the cleanup file passing the current file as parameter
-    start /min "" "%temp%\cleanup.bat" "%~f0"
-)
-:: --- End Self-Deletetion Cleanup ---
-
 goto StartBackup
