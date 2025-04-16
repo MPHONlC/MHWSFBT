@@ -2,7 +2,7 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script
-set "verifiedScriptURL=https://raw.githubusercontent.com/YourGitHubUsername/YourRepoName/main/MHWSaveFileBackupTool.bat"
+set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/MHWSaveFileBackupTool.bat"
 set "verifiedScriptPath=%temp%\MHWSaveFileBackupTool_verified.bat"
 set "currentScriptPath=%~f0"
 set "verificationPassed=false"
