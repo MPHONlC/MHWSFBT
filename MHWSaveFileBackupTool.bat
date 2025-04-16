@@ -2,18 +2,29 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script
-set "originalScript=%~f0"
-set "currentScript=%tempScript%"
+@echo off
+set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/MHWSaveFileBackupTool.bat"
+set "verifiedScriptPath=%temp%\MHWSaveFileBackupTool_verified.bat"
+set "currentScriptPath=%~f0"
 set "verificationPassed=false"
-fc "%originalScript%" "%currentScript%" >nul
+echo Downloading the verified script from GitHub...
+powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%verifiedScriptURL%', '%verifiedScriptPath%')"
+if not exist "%verifiedScriptPath%" (
+    echo Failed to download the verified script. Exiting...
+    timeout /t 5 >nul
+    exit /b
+)
+fc "%currentScriptPath%" "%verifiedScriptPath%" >nul
 if %errorlevel%==0 (
     set "verificationPassed=true"
 )
 if not "%verificationPassed%"=="true" (
-	title Monster Hunter Wilds : Save File Backup Script --- The script has been modified. Exiting...
+    title Monster Hunter Wilds : Save File Backup Script --- The script has been modified. Exiting...
     echo Verification failed. The script has been modified. Exiting...
     timeout /t 5 >nul
     exit /b
+) else (
+    echo Verification passed. Continuing...
 )
 setlocal enabledelayedexpansion
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
