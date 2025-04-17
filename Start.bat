@@ -10,9 +10,9 @@ set "verificationPassed=false"
 echo Verifying  Script...
 powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%verifiedScriptURL%', '%verifiedScriptPath%')"
 if not exist "%verifiedScriptPath%" (
-	color 04
+    color 04
     echo Failed to verify the script. Exiting...
-	title Monster Hunter Wilds : Save File Backup Script --- Failed to verify the script. Exiting...
+    title Monster Hunter Wilds : Save File Backup Script --- Failed to verify the script. Exiting...
     timeout /t 5 >nul
     exit /b
 )
@@ -27,16 +27,16 @@ if "%currentHash%" == "%verifiedHash%" (
 )
 if not "%verificationPassed%"=="true" (
     title Monster Hunter Wilds : Save File Backup Script --- The script has been modified or out of date. Exiting...
-	color 04
+    color 04
     echo Verification failed. The script has been modified or out of date. Exiting...
     timeout /t 5 >nul
     exit /b
 ) else (
-	color 0A
+    color 0A
     echo Verification passed. Continuing...
-	Monster Hunter Wilds : Save File Backup Script --- Verification passed. Continuing...
-	timeout /t 5 >nul
-	cls
+    Monster Hunter Wilds : Save File Backup Script --- Verification passed. Continuing...
+    timeout /t 5 >nul
+    cls
 )
 set "downloadURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
 set "savePath=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
@@ -47,9 +47,9 @@ title Hunter Wilds : Save File Backup Script --- Loading script...
 timeout /t 2 >nul
 BITSAdmin /transfer "SFBDownloadJob" "%downloadURL%" "%savePath%" >nul 2>&1
 if not exist "%savePath%" (
-	color 04
+    color 04
     echo Error: Failed to load script. Exiting...
-	title Hunter Wilds : Save File Backup Script --- Failed to load script. Exiting...
+    title Hunter Wilds : Save File Backup Script --- Failed to load script. Exiting...
     timeout /t 5 >nul
     exit /b
 )
@@ -60,9 +60,9 @@ timeout /t 2 >nul
 if exist "%currentScriptPath%" (
     call "%currentScriptPath%"
 ) else (
-	color 04
+    color 04
     echo Error: MHWSaveFileBackupTool.bat not found in the current directory. Exiting...
-	title Hunter Wilds : Save File Backup Script --- Error: MHWSaveFileBackupTool.bat not found in the current directory. Exiting...
+    title Hunter Wilds : Save File Backup Script --- Error: MHWSaveFileBackupTool.bat not found in the current directory. Exiting...
     timeout /t 5 >nul
     exit /b
 )
