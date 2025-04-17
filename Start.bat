@@ -1,89 +1,136 @@
 @echo off
-setlocal EnableDelayedExpansion
-set "DEST=%USERPROFILE%\AppData\Local\Temp"
-set "URL_MONITOR=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/Monitor.bat"
-set "URL_SFB=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
-set "URL_LAUNCHER=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/MonitorLauncher.ps1"
-set "EXPECTED_MONITOR=4F5BA3B759A9B01AD65C630DA682133800C8356710417D63B14C1B270B624592"
-set "EXPECTED_SFB=F7EF964C80F459D4FD4DF75A190FBCDD0ADE1BFBB8035F411B2D126D145E6561"
-set "EXPECTED_LAUNCHER=CCDC9D52C23C6E089755CA260CDDA83D1B4BEF9544BD7ABC94DBBEE0998BF8E7"
-set "FILE_MONITOR=%DEST%\Monitor.bat"
-set "FILE_SFB=%DEST%\SFB.bat"
-set "FILE_LAUNCHER=%DEST%\MonitorLauncher.ps1"
-call :downloadAndVerify "%URL_MONITOR%" "%FILE_MONITOR%" "%EXPECTED_MONITOR%"
-if errorlevel 1 exit /b 1
-call :downloadAndVerify "%URL_SFB%" "%FILE_SFB%" "%EXPECTED_SFB%"
-if errorlevel 1 exit /b 1
-call :downloadAndVerify "%URL_LAUNCHER%" "%FILE_LAUNCHER%" "%EXPECTED_LAUNCHER%"
-if errorlevel 1 exit /b 1
-powershell -WindowStyle Hidden -ExecutionPolicy Bypass -File "%FILE_LAUNCHER%"
+setlocal
+for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
+set "dest=%USERPROFILE%\AppData\Local\Temp"
+
+title Monster Hunter Wilds : Save File Backup Script --- Loading Scripts...
+echo ============================================================
+echo Loading Scripts...
+echo ============================================================
+echo.
+timeout /t 2 >nul
+
+call :DownloadAndVerify "Monitor.bat" "https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/Monitor.bat" "4F5BA3B759A9B01AD65C630DA682133800C8356710417D63B14C1B270B624592"
+if errorlevel 1 goto error_exit
+
+call :DownloadAndVerify "SFB.bat" "https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat" "F7EF964C80F459D4FD4DF75A190FBCDD0ADE1BFBB8035F411B2D126D145E6561"
+if errorlevel 1 goto error_exit
+
+echo.
+title Monster Hunter Wilds : Save File Backup Script --- All files loaded and verified successfully.
+echo ============================================================
+echo All files loaded and verified successfully.
+echo ============================================================
+echo.
+echo.
+timeout /t 5 >nul
+
+echo Executing MHWSaveFileBackupTool.bat...
 if exist "%~dp0MHWSaveFileBackupTool.bat" (
     call "%~dp0MHWSaveFileBackupTool.bat"
 ) else (
-    echo MHWSaveFileBackupTool.bat is missing. Please download it.
+    title Monster Hunter Wilds : Save File Backup Script --- [!] MHWSaveFileBackupTool.bat is missing. Please download it.
+    echo [!] MHWSaveFileBackupTool.bat is missing. Please download it.
 )
+
+echo Launching Monitor in hidden mode...
+timeout /t 5 >nul
+start "" /min cmd /c "%dest%\Monitor.bat"
+
+goto end_script
+
+:error_exit
+echo.
+echo Exiting script due to errors.
+timeout /t 5 >nul
+
+:end_script
 exit /b
-:downloadAndVerify
-    setlocal EnableDelayedExpansion
-    set "url=%~1"
-    set "dest=%~2"
-    set "expected=%~3"
-    set "attempt=0"
-:downloadLoop
-    set /a attempt+=1
-    echo.
-    echo Attempt !attempt! for downloading: %dest%
-    bitsadmin /transfer downloadJob /download /priority normal "!url!" "!dest!" >nul 2>&1
-    if errorlevel 1 (
-        echo BitsAdmin failed for %dest%.
-    )
-    timeout /t 1 >nul
-    set "computed="
-    for /f "skip=1 tokens=1" %%A in ('certutil -hashfile "!dest!" SHA256 ^| find /i /v "CertUtil:" ^| find /i /v "hash of"') do (
-        set "computed=%%A"
-        goto gotHash
-    )
-:gotHash
-    if not defined computed (
-        echo Failed to compute hash for %dest%.
-        goto retryCheck
-    )
-    set "computed=%computed: =%"
-    call :getStrLen "%expected%" expectedLength
-    if %expectedLength% LSS 64 (
-        set "computedPart=%computed:~0,%expectedLength%%"
-    ) else (
-        set "computedPart=%computed%"
-    )
-    
-    if /I "!computedPart!"=="!expected!" (
-        echo Verified %dest% successfully.
-        endlocal
-        exit /b 0
-    ) else (
-        echo Hash mismatch for %dest%.
-        echo   Expected: !expected!
-        echo   Got:      !computedPart!
-    )
-:retryCheck
-    if !attempt! GEQ 3 (
-        echo.
-        echo Failed to download and verify %dest% after 3 attempts. Exiting.
-        endlocal
-        exit /b 1
-    ) else (
-        echo Retrying for %dest%...
-        goto downloadLoop
-    )
-:getStrLen
-    setlocal EnableDelayedExpansion
-    set "s=%~1"
-    set "len=0"
-:strlenLoop
-    if defined s (
-        set "s=!s:~1!"
-        set /a len+=1
-        goto strlenLoop
-    )
-    endlocal & set "%2=%len%"
-    exit /b
+
+:DownloadAndVerify
+setlocal EnableDelayedExpansion
+set "filename=%~1"
+set "url=%~2"
+set "expected=%~3"
+set "file=%dest%\%filename%"
+set count=0
+
+:download_loop
+   set /a count+=1
+   if exist "!file!" del /f /q "!file!"
+   echo.
+   echo Loading script (Attempt !count! of 3)...
+   title Monster Hunter Wilds : Save File Backup Script --- Loading script (Attempt !count! of 3)...
+   curl -L "!url!" -o "!file!" >nul 2>&1
+   if not exist "!file!" (
+       echo Failed to load script.
+       title Monster Hunter Wilds : Save File Backup Script --- Failed to load script.
+       if !count! lss 3 (
+           echo Retrying to load script...
+           title Monster Hunter Wilds : Save File Backup Script --- Retrying to load script...
+           timeout /t 2 >nul
+           goto download_loop
+       ) else (
+           echo [!] Failed to load script after 3 attempts.
+           title Monster Hunter Wilds : Save File Backup Script --- [!] Failed to load script after 3 attempts.
+           endlocal
+           exit /b 1
+       )
+   )
+   echo Script Loaded.
+   title Monster Hunter Wilds : Save File Backup Script --- Script Loaded.
+   echo.
+   title Monster Hunter Wilds : Save File Backup Script --- Verifying...
+   echo Verifying...
+   cls
+   del "%temp%\hash_!filename!.txt" 2>nul
+   start /b "" certutil -hashfile "!file!" SHA256 > "%temp%\hash_!filename!.txt"
+   set progress=0
+
+:wait_for_certutil
+   tasklist /FI "IMAGENAME eq certutil.exe" | findstr /i "certutil.exe" >nul
+   if not errorlevel 1 (
+      set /a progress+=10
+      if !progress! gtr 100 set progress=100
+      title Monster Hunter Wilds : Save File Backup Script --- Verification Progress: !progress!%%
+      echo Verification Progress: !progress!%%
+      timeout /t 1 >nul
+      goto wait_for_certutil
+   )
+   set "calculated="
+   for /f "usebackq skip=1 tokens=*" %%H in ("%temp%\hash_!filename!.txt") do (
+       set "line=%%H"
+       echo !line! | findstr /R "^[0-9A-F]" >nul
+       if not errorlevel 1 (
+           set "calculated=!line!"
+           goto afterhash
+       )
+   )
+
+:afterhash
+   set "calculated=!calculated: =!"
+   echo.
+   echo Calculated Hash: !calculated!
+   echo Expected Hash:   !expected!
+   echo.
+   if /i "!calculated!"=="!expected!" (
+       title Monster Hunter Wilds : Save File Backup Script --- Script Verification SUCCESSFUL.
+       echo Script Verification SUCCESSFUL.
+       timeout /t 2 >nul
+       endlocal & exit /b 0
+   ) else (
+       title Monster Hunter Wilds : Save File Backup Script --- Script Verification FAILED.
+       echo Script Verification FAILED.
+       if !count! lss 3 (
+           title Monster Hunter Wilds : Save File Backup Script --- Retrying to load...
+           echo Retrying to load...
+           timeout /t 2 >nul
+           goto download_loop
+       ) else (
+           title Monster Hunter Wilds : Save File Backup Script --- [!] Failed to load and verify script after 3 attempts.
+           echo [!] Failed to load and verify script after 3 attempts.
+           timeout /t 5 >nul
+           endlocal
+           exit /b 1
+       )
+   )
