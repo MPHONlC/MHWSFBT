@@ -157,11 +157,14 @@ echo Restarting Script...
 timeout /t 2 /nobreak >nul
 cls
 goto StartBackup
-:: Run SFB.bat and wait for it to terminate before proceeding
-start "" /wait "%verifiedScriptPath%"
-:: Once SFB.bat has closed, execute cleanup
-echo SFB.bat has terminated, executing cleanup...
+set "SFBEPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
+start "" "%verifiedScriptPath%"
+:CheckProcess
+timeout /t 2 >nul
+tasklist | find /i "SFB.bat" >nul
+if %errorlevel% == 0 goto CheckProcess
+echo Script has been closed manually. Executing cleanup...
 call "%SFBEPath%"
-echo Cleanup completed.
+echo Executing Cleanup Command.
 timeout /t 2 >nul
 exit /b
