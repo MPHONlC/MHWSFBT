@@ -14,14 +14,14 @@ if not exist "%SFBEPath%" (
     echo [INFO] Script not found in %USERPROFILE%\AppData\Local\Temp. Fetching file...
     curl -L --progress-bar "%SFBEUrl%" -o "%SFBEPath%"
     if errorlevel 1 (
-	    color 04
-	    title Monster Hunter Wilds : Save File Backup Script --- [ERROR] Failed to load script. Exiting...
+	color 04
+	title Monster Hunter Wilds : Save File Backup Script --- [ERROR] Failed to load script. Exiting...
         echo [ERROR] Failed to load script. Exiting...
         timeout /t 2 >nul
         exit /b
     )
-	color 0A
-	title Monster Hunter Wilds : Save File Backup Script --- [INFO] Scriptloaded successfully.
+    color 0A
+    title Monster Hunter Wilds : Save File Backup Script --- [INFO] Scriptloaded successfully.
     echo [INFO] Scriptloaded successfully.
     timeout /t 1 >nul
 ) else (
