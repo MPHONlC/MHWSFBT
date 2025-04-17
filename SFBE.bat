@@ -2,6 +2,7 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script --- Cleanup
+for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
 set "tempDir=%USERPROFILE%\AppData\Local\Temp"
 set "handleZip=%tempDir%\Handle.zip"
 set "handlePath=%tempDir%\handle.exe"
