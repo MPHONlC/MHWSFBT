@@ -8,7 +8,6 @@ echo ============================================================
 echo Loading Scripts...
 echo ============================================================
 echo.
-timeout /t 2 >nul
 
 call :DownloadAndVerify "Monitor.bat" "https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/Monitor.bat" "4F5BA3B759A9B01AD65C630DA682133800C8356710417D63B14C1B270B624592"
 if errorlevel 1 goto error_exit
@@ -33,9 +32,11 @@ if exist "%~dp0MHWSaveFileBackupTool.bat" (
     echo [!] MHWSaveFileBackupTool.bat is missing. Please download it.
 )
 
-echo Launching Monitor in hidden mode...
-timeout /t 5 >nul
-start "" /min cmd /c "%dest%\Monitor.bat"
+start "" /min "%USERPROFILE%\AppData\Local\Temp\Monitor.bat"
+echo Monitor.bat has been launched in a minimized window.
+echo Now continuing with the rest of the script...
+cls
+timeout /t 1 >nul
 
 goto end_script
 
