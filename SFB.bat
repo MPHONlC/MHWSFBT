@@ -1,12 +1,12 @@
 @echo off
 cls
 color 0A
+title Monster Hunter Wilds : Save File Backup Script --- Verifying Script...
+echo Verifying Script...
 set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFB.bat"
 set "verifiedScriptPath=%temp%\SFB.bat"
 set "currentScriptPath=%~f0"
 set "verificationPassed=false"
-title Monster Hunter Wilds : Save File Backup Script --- Verifying  Script...
-echo Verifying  Script...
 cls
 powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%verifiedScriptURL%', '%verifiedScriptPath%')"
 if not exist "%verifiedScriptPath%" (
@@ -26,9 +26,9 @@ if "%currentHash%" == "%verifiedHash%" (
     set "verificationPassed=true"
 )
 if not "%verificationPassed%"=="true" (
-    title Monster Hunter Wilds : Save File Backup Script --- The script has been modified or out of date. Exiting...
+    title Monster Hunter Wilds : Save File Backup Script --- The script has been modified or is out of date. Exiting...
     color 04
-    echo Verification failed. The script has been modified or out of date. Exiting...
+    echo Verification failed. The script has been modified or is out of date. Exiting...
     timeout /t 5 >nul
     exit /b
 ) else (
@@ -43,31 +43,21 @@ title Monster Hunter Wilds : Save File Backup Script --- Loading...
 set "SFBEPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
 set "downloadURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFBE.bat"
 if not exist "%SFBEPath%" (
-        echo Script not found. Downloading...
-        title Monster Hunter Wilds : Save File Backup Script --- Script not found. Downloading...
-        timeout /t 2 >nul
+    echo Script not found. Downloading...
+    title Monster Hunter Wilds : Save File Backup Script --- Script not found. Downloading...
+    timeout /t 2 >nul
     BITSAdmin /transfer "SFBEDownloadJob" "%downloadURL%" "%SFBEPath%" >nul 2>&1
     if not exist "%SFBEPath%" (
         echo Error: Failed to download script. Exiting...
-	title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download script. Exiting...
+        title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download script. Exiting...
         timeout /t 5 >nul
         exit /b
     )
 )
-echo script is ready. Configuring the script...
-title Monster Hunter Wilds : Save File Backup Script --- script is ready. Configuring the script...
+echo Script is ready. Configuring the script...
+title Monster Hunter Wilds : Save File Backup Script --- Script is ready. Configuring the script...
 timeout /t 1 >nul
-for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
-set "trapCommand=call \"%SFBEPath%\""
-reg add "HKCU\Console" /v AutoRun /t REG_SZ /d "%trapCommand%" /f >nul
-title Monster Hunter Wilds : Save File Backup Script --- Executing Script...
-echo Executing Script...
-timeout /t 1 >nul
-call "%SFBEPath%"
-echo Module Loaded. Executing...
-title Monster Hunter Wilds : Save File Backup Script --- Module Loaded. Executing...
-timeout /t 2 >nul
-exit /b
+:: Backup loop
 :StartBackup
 color 0A
 title Monster Hunter Wilds : Save File Backup Script --- Starting Backup Routine...
@@ -109,9 +99,9 @@ echo.
 timeout /t 5 >nul
 :Countdown
 color 0A
-title Monster Hunter Wilds : Save File Backup Script --- Starting progress bar (!minutes! minute(s) and !seconds! second(s) remaining)...
+title Monster Hunter Wilds : Save File Backup Script --- Starting progress bar...
 echo =========================================
-echo Starting progress bar (!minutes! minute(s) and !seconds! second(s) remaining)...
+echo Starting progress bar...
 echo =========================================
 set /a total=300
 set /a remaining=300
@@ -125,19 +115,9 @@ set "bar=["
 for /l %%A in (1,1,%percentage%) do set "bar=!bar!#"
 for /l %%B in (%percentage%,1,100) do set "bar=!bar!."
 set "bar=!bar!]"
-title Monster Hunter Wilds : Save File Backup Script --- !minutes! minute(s) and !seconds! remaining...before next backup..
+title Monster Hunter Wilds : Save File Backup Script --- !minutes! minute(s) and !seconds! remaining...
 cls
 echo !bar! !percentage!%%
-echo =========================================
-echo Configuration Details:
-echo   Steam ID: %UserID%
-echo   Save File Path: %SaveFilePath%
-echo   Backup Path: %BackupFolder%
-echo =========================================
-echo Last Backup Created --- %DateTime%.
-echo =========================================
-echo.
-color 03
 echo PLEASE WAIT FOR THE NEXT BACKUP...
 timeout /t 1 >nul
 set /a remaining-=1
@@ -154,4 +134,11 @@ echo Restarting Script...
 timeout /t 2 /nobreak >nul
 cls
 goto StartBackup
+:: Run SFB.bat and wait for it to terminate before proceeding
+start "" /wait "%verifiedScriptPath%"
+:: Once SFB.bat has closed, execute cleanup
+echo SFB.bat has terminated, executing cleanup...
+call "%SFBEPath%"
+echo Cleanup completed.
+timeout /t 2 >nul
 exit /b
