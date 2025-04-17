@@ -2,6 +2,7 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script --- Monitoring Scripts
+for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
 set "SFBScript=SFB.bat"
 set "BackupToolScript=MHWSaveFileBackupTool.bat"
 set "StartScript=Start.bat"
