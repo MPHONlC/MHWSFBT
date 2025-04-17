@@ -8,6 +8,9 @@ set "handleZip=%tempDir%\Handle.zip"
 set "handlePath=%tempDir%\handle.exe"
 set "file1=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
 set "file2=%USERPROFILE%\AppData\Local\Temp\MHWSaveFileBackupTool.bat"
+set "file3=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
+set "file4=%USERPROFILE%\AppData\Local\Temp\Start.bat"
+set "file5=%USERPROFILE%\AppData\Local\Temp\handle64a.exe"
 echo Downloading Handle.exe from Sysinternals...
 title Monster Hunter Wilds : Save File Backup Script --- Downloading Handle.exe from Sysinternals...
 timeout /t 2 >nul
@@ -30,7 +33,7 @@ del /f /q "%handleZip%" >nul 2>&1
 echo Handle.exe is ready. Checking file usage...
 title Monster Hunter Wilds : Save File Backup Script --- Handle.exe is ready. Checking file usage...
 setlocal enabledelayedexpansion
-for %%F in ("%file1%" "%file2%") do (
+for %%F in ("%file1%" "%file2%" "%file3%" "%file4%" "%file5%") do (
     echo Checking if %%F is in use...
     "%handlePath%" %%F | find "No matching handles" >nul
     if %errorlevel%==0 (
