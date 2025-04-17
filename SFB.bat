@@ -1,6 +1,43 @@
 @echo off
 cls
 color 0A
+set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFB.bat"
+set "verifiedScriptPath=%temp%\SFB.bat"
+set "currentScriptPath=%~f0"
+set "verificationPassed=false"
+title Monster Hunter Wilds : Save File Backup Script --- Verifying  Script...
+echo Verifying  Script...
+cls
+powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%verifiedScriptURL%', '%verifiedScriptPath%')"
+if not exist "%verifiedScriptPath%" (
+	color 04
+    echo Failed to verify the script. Exiting...
+	title Monster Hunter Wilds : Save File Backup Script --- Failed to verify the script. Exiting...
+    timeout /t 5 >nul
+    exit /b
+)
+for /f "delims=" %%H in ('certutil -hashfile "%currentScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
+    set "currentHash=%%H"
+)
+for /f "delims=" %%H in ('certutil -hashfile "%verifiedScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
+    set "verifiedHash=%%H"
+)
+if "%currentHash%" == "%verifiedHash%" (
+    set "verificationPassed=true"
+)
+if not "%verificationPassed%"=="true" (
+    title Monster Hunter Wilds : Save File Backup Script --- The script has been modified or out of date. Exiting...
+	color 04
+    echo Verification failed. The script has been modified or out of date. Exiting...
+    timeout /t 5 >nul
+    exit /b
+) else (
+    echo Verification passed. Continuing...
+	color 04
+	title Monster Hunter Wilds : Save File Backup Script --- Verification passed. Continuing...
+	timeout /t 5 >nul
+	cls
+)
 setlocal enabledelayedexpansion
 title Monster Hunter Wilds : Save File Backup Script --- Loading...
 set "SFBEPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
