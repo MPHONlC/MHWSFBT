@@ -157,12 +157,12 @@ echo Checking if Monster Hunter Wilds is already running...
 timeout /t 2 > nul
 tasklist | findstr /i "%GameExe%" >nul
 if %errorlevel%==0 (
-	    color 0A
-	    title Monster Hunter Wilds : Save File Backup Script --- Monster Hunter Wilds is already running. Skipping game launch...
+	color 0A
+	title Monster Hunter Wilds : Save File Backup Script --- Monster Hunter Wilds is already running. Skipping game launch...
         echo Monster Hunter Wilds is already running. Skipping game launch...
 ) else (
-	    color 05
-	    title Monster Hunter Wilds : Save File Backup Script --- Monster Hunter Wilds is not running. Launching the game via Steam...
+	color 05
+	title Monster Hunter Wilds : Save File Backup Script --- Monster Hunter Wilds is not running. Launching the game via Steam...
         echo Monster Hunter Wilds is not running. Launching the game via Steam...
         start "" "%SteamInstallDir%\steam.exe" -applaunch %GameID%
 )
@@ -177,19 +177,19 @@ if not exist "%tempScript%" (
     BITSAdmin /transfer "SFBDownloadJob" "%downloadURL%" "%tempScript%" >nul 2>&1
     if not exist "%tempScript%" (
         color 04
-	    title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download script. Exiting...
+	title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download script. Exiting...
         echo Error: Failed to download script. Exiting...
         timeout /t 5 >nul
         exit /b
     )
     attrib +R "%tempScript%"
         color 06
-	    title Monster Hunter Wilds : Save File Backup Script --- script downloaded and marked as read-only.
+	title Monster Hunter Wilds : Save File Backup Script --- script downloaded and marked as read-only.
         echo script downloaded and marked as read-only.
 	timeout /t 2 >nul
 ) else (
         color 06
-	    title Monster Hunter Wilds : Save File Backup Script --- script already exists. Skipping download.
+	title Monster Hunter Wilds : Save File Backup Script --- script already exists. Skipping download.
         echo script already exists. Skipping download.
 	timeout /t 2 >nul
 )
