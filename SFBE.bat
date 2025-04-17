@@ -1,16 +1,16 @@
 @echo off
 cls
 color 0A
-title Monster Hunter Wilds : Save File Backup Script --- Clean up - Downloading and Running Handle.exe
+title Monster Hunter Wilds : Save File Backup Script --- Cleanup - Downloading and Running Handle.exe
 set "handleURL=https://download.sysinternals.com/files/Handle.zip"
 set "tempDir=%USERPROFILE%\AppData\Local\Temp"
 set "handleZip=%tempDir%\Handle.zip"
 set "handlePath=%tempDir%\handle.exe"
-set "file1=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
-set "file2=%USERPROFILE%\AppData\Local\Temp\MHWSaveFileBackupTool.bat"
-set "file3=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
-set "file4=%USERPROFILE%\AppData\Local\Temp\Start.bat"
-set "file5=%USERPROFILE%\AppData\Local\Temp\handle64a.exe"
+set "file1=%tempDir%\SFB.bat"
+set "file2=%tempDir%\MHWSaveFileBackupTool.bat"
+set "file3=%tempDir%\SFBE.bat"
+set "file4=%tempDir%\Start.bat"
+set "file5=%tempDir%\handle64a.exe"
 echo Downloading Handle.exe from Sysinternals...
 title Monster Hunter Wilds : Save File Backup Script --- Downloading Handle.exe from Sysinternals...
 timeout /t 2 >nul
@@ -36,16 +36,19 @@ setlocal enabledelayedexpansion
 for %%F in ("%file1%" "%file2%" "%file3%" "%file4%" "%file5%") do (
     echo Checking if %%F is in use...
     "%handlePath%" %%F | find "No matching handles" >nul
-    if %errorlevel%==0 (
+    set "handleResult=%errorlevel%"
+    tasklist | find /i "%%~nxF" >nul
+    set "tasklistResult=%errorlevel%"
+    if %handleResult%==0 if %tasklistResult%==1 (
         echo File %%F is not in use. Deleting...
-	title Monster Hunter Wilds : Save File Backup Script --- File %%F is not in use. Deleting...
+        title Monster Hunter Wilds : Save File Backup Script --- File %%F is not in use. Deleting...
         del /f /q "%%F" >nul 2>&1
         echo File %%F deleted.
-		timeout /t 5 >nul
+        timeout /t 5 >nul
     ) else (
         echo File %%F is in use. Skipping deletion.
-	title Monster Hunter Wilds : Save File Backup Script --- File %%F is in use. Skipping deletion.
-	timeout /t 5 >nul
+        title Monster Hunter Wilds : Save File Backup Script --- File %%F is in use. Skipping deletion.
+        timeout /t 5 >nul
     )
 )
 endlocal
