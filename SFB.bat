@@ -38,22 +38,26 @@ if not "%verificationPassed%"=="true" (
     timeout /t 5 >nul
     cls
 )
+color 0A
 setlocal enabledelayedexpansion
 title Monster Hunter Wilds : Save File Backup Script --- Loading...
 set "SFBEPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
 set "downloadURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFBE.bat"
 if not exist "%SFBEPath%" (
+    color 04
     echo Script not found. Downloading...
     title Monster Hunter Wilds : Save File Backup Script --- Script not found. Downloading...
     timeout /t 2 >nul
     BITSAdmin /transfer "SFBEDownloadJob" "%downloadURL%" "%SFBEPath%" >nul 2>&1
     if not exist "%SFBEPath%" (
+        color 04
         echo Error: Failed to download script. Exiting...
         title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download script. Exiting...
         timeout /t 5 >nul
         exit /b
     )
 )
+color 06
 echo Script is ready. Configuring the script...
 title Monster Hunter Wilds : Save File Backup Script --- Script is ready. Configuring the script...
 timeout /t 1 >nul
@@ -108,14 +112,6 @@ set /a remaining=300
 set "bar="
 :ProgressLoop
 if %remaining% leq 0 goto EndCountdown
-tasklist | find /i "cmd.exe" >nul
-if %errorlevel% neq 0 (
-    echo Script has been closed manually. Executing cleanup...
-    call "%SFBEPath%"
-    echo Cleanup completed.
-    timeout /t 2 >nul
-    exit /b
-)
 set /a percentage=(remaining * 100) / total
 set /a minutes=%remaining% / 60
 set /a seconds=%remaining% %% 60
