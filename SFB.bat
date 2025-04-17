@@ -108,6 +108,14 @@ set /a remaining=300
 set "bar="
 :ProgressLoop
 if %remaining% leq 0 goto EndCountdown
+tasklist | find /i "SFB.bat" >nul
+if %errorlevel% neq 0 (
+    echo Script has been closed manually. Executing cleanup...
+    call "%SFBEPath%"
+    echo Cleanup completed.
+    timeout /t 2 >nul
+    exit /b
+)
 set /a percentage=(remaining * 100) / total
 set /a minutes=%remaining% / 60
 set /a seconds=%remaining% %% 60
@@ -157,14 +165,3 @@ echo Restarting Script...
 timeout /t 2 /nobreak >nul
 cls
 goto StartBackup
-set "SFBEPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
-start "" "%verifiedScriptPath%"
-:CheckProcess
-timeout /t 2 >nul
-tasklist | find /i "SFB.bat" >nul
-if %errorlevel% == 0 goto CheckProcess
-echo Script has been closed manually. Executing cleanup...
-call "%SFBEPath%"
-echo Executing Cleanup Command.
-timeout /t 2 >nul
-exit /b
