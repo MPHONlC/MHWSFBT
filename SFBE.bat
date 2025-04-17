@@ -11,6 +11,7 @@ if exist "%handlePath%" (
 	title Monster Hunter Wilds : Save File Backup Script --- [INFO] handle.exe already exists in %tempDir%. Skipping download.
     echo [INFO] handle.exe already exists in %tempDir%. Skipping download.
 	timeout /t 2 >nul
+	cls
 ) else (
     color 03
     echo [INFO] Downloading Handle.exe from Sysinternals...
@@ -21,6 +22,7 @@ if exist "%handlePath%" (
         echo [ERROR] Failed to download Handle.zip. Exiting...
         title Monster Hunter Wilds : Save File Backup Script --- Error: Download failed. Exiting...
         timeout /t 2 >nul
+		cls
         exit /b
     )
 	color 03
@@ -31,6 +33,7 @@ if exist "%handlePath%" (
         echo [ERROR] Failed to extract Handle.exe. Exiting...
         title Monster Hunter Wilds : Save File Backup Script --- Error: Extraction failed. Exiting...
         timeout /t 2 >nul
+		cls
         exit /b
     )
     del /f /q "%handleZip%" >nul 2>&1
@@ -47,18 +50,21 @@ if %errorlevel%==0 (
     echo [INFO] MonsterHunterWilds.exe is running. Waiting for proccess to close...
 	title Monster Hunter Wilds : Save File Backup Script --- [INFO] MonsterHunterWilds.exe is running. Waiting for proccess to close...
     timeout /t 5 >nul
+	cls
     goto CHECK_MHW
 ) else (
     color 0A
     title Monster Hunter Wilds : Save File Backup Script --- [INFO] MonsterHunterWilds.exe is not running. Proceeding with cleanup.
     echo [INFO] MonsterHunterWilds.exe is not running. Proceeding with cleanup.
+	cls
 )
 setlocal EnableDelayedExpansion
-set "filesList=Start.bat SFB.bat Monitor.bat MonitorLauncher.bat MHWSaveFileBackupTool.bat"
+set "filesList=Start.bat SFB.bat Monitor.bat MonitorLauncher.bat MHWSaveFileBackupTool.bat hash_Monitor.bat.txt hash_SFB.bat.txt"
 for %%F in (%filesList%) do (
     if exist "%tempDir%\%%F" (
         echo.
         echo [INFO] Processing file: %tempDir%\%%F
+		cls
         if /I "%%~xF"==".bat" (
 		    color 03
 		    title Monster Hunter Wilds : Save File Backup Script --- [INFO] %%F is a batch file. Checking for running instances via WMIC...
@@ -71,6 +77,7 @@ for %%F in (%filesList%) do (
 				    title Monster Hunter Wilds : Save File Backup Script --- [INFO] Terminating process with PID !PID! for %%F...
                     echo [INFO] Terminating process with PID !PID! for %%F...
                     taskkill /PID !PID! /F >nul 2>&1
+					cls
                 )
             )
         ) else (
@@ -80,6 +87,7 @@ for %%F in (%filesList%) do (
 				title Monster Hunter Wilds : Save File Backup Script --- [INFO] Process corresponding to %%F is running. Attempting to terminate...
                 echo [INFO] Process corresponding to %%F is running. Attempting to terminate...
                 taskkill /f /im "%%F" >nul 2>&1
+				cls
             )
         )
         timeout /t 1 >nul
@@ -90,23 +98,27 @@ for %%F in (%filesList%) do (
             echo [ERROR] Unable to delete %%F at first attempt. Retrying in 5 seconds...
             timeout /t 2 >nul
             del /f /q "%tempDir%\%%F" >nul 2>&1
+			cls
         )
         if not exist "%tempDir%\%%F" (
 		    color 0A
 		    title Monster Hunter Wilds : Save File Backup Script --- [INFO] %%F deleted successfully.
             echo [INFO] %%F deleted successfully.
 			timeout /t 2 >nul
+			cls
         ) else (
 		    color 04
 		    title Monster Hunter Wilds : Save File Backup Script --- [ERROR] Unable to delete %%F.
             echo [ERROR] Unable to delete %%F.
 			timeout /t 2 >nul
+			cls
         )
     ) else (
 	    color 06
 	    title Monster Hunter Wilds : Save File Backup Script --- [INFO] File %%F not found. Skipping...
         echo [INFO] File %%F not found. Skipping...
 		timeout /t 2 >nul
+		cls
     )
 )
 endlocal
