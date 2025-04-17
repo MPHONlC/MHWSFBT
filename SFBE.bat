@@ -62,8 +62,7 @@ if %errorlevel%==0 (
 )
 
 setlocal EnableDelayedExpansion
-rem The filesList now contains both the proper hash file names and the additional hash*.bat.txt files.
-set "filesList=Start.bat SFB.bat Monitor.bat MonitorLauncher.bat MHWSaveFileBackupTool.bat hash_Monitor.txt hash_SFB.txt hash_Monitor.bat.txt hash_SFB.bat.txt SFB Monitor"
+set "filesList=Start.bat SFB.bat Monitor.bat MonitorLauncher.bat MHWSaveFileBackupTool.bat SFBE.bat hash_Monitor.txt hash_SFB.txt hash_Monitor.bat.txt hash_SFB.bat.txt SFB Monitor"
 
 for %%F in (%filesList%) do (
     if exist "%tempDir%\%%F" (
