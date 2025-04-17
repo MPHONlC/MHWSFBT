@@ -14,11 +14,13 @@ tasklist | find /i "%BackupToolScript%" >nul
 set "BackupToolRunning=%errorlevel%"
 tasklist | find /i "%StartScript%" >nul
 set "StartScriptRunning=%errorlevel%"
-if %SFBRunning% neq 0 if %BackupToolRunning% neq 0 if %StartScriptRunning% neq 0 (
-    echo All monitored scripts have been closed. Executing cleanup...
-    call "%SFBEPath%"
-    echo Cleanup completed.
-    timeout /t 2 >nul
-    exit /b
-)
+if %SFBRunning%==0 goto LoopAgain
+if %BackupToolRunning%==0 goto LoopAgain
+if %StartScriptRunning%==0 goto LoopAgain
+echo All monitored scripts have been closed. Executing cleanup...
+call "%SFBEPath%"
+echo Cleanup completed.
+timeout /t 2 >nul
+exit /b
+:LoopAgain
 goto CheckLoop
