@@ -2,6 +2,7 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script
+for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
 set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/Start.bat"
 set "verifiedScriptPath=%temp%\Start.bat"
 set "currentScriptPath=%~f0"
