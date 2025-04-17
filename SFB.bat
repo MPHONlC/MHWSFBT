@@ -108,7 +108,7 @@ set /a remaining=300
 set "bar="
 :ProgressLoop
 if %remaining% leq 0 goto EndCountdown
-tasklist | find /i "SFB.bat" >nul
+tasklist | find /i "cmd.exe" >nul
 if %errorlevel% neq 0 (
     echo Script has been closed manually. Executing cleanup...
     call "%SFBEPath%"
