@@ -14,7 +14,7 @@ timeout /t 2 >nul
 BITSAdmin /transfer "HandleDownloadJob" "%handleURL%" "%handleZip%" >nul 2>&1
 if not exist "%handleZip%" (
     echo Error: Failed to download Handle.zip. Exiting...
-	title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download Handle.zip. Exiting...
+    title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download Handle.zip. Exiting...
     timeout /t 5 >nul
     exit /b
 )
@@ -22,7 +22,7 @@ echo Extracting Handle.exe...
 powershell -Command "Expand-Archive -Path '%handleZip%' -DestinationPath '%tempDir%' -Force" >nul 2>&1
 if not exist "%handlePath%" (
     echo Error: Failed to extract Handle.exe. Exiting...
-	title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to extract Handle.exe. Exiting...
+    title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to extract Handle.exe. Exiting...
     timeout /t 5 >nul
     exit /b
 )
@@ -35,14 +35,14 @@ for %%F in ("%file1%" "%file2%") do (
     "%handlePath%" %%F | find "No matching handles" >nul
     if %errorlevel%==0 (
         echo File %%F is not in use. Deleting...
-		title Monster Hunter Wilds : Save File Backup Script --- File %%F is not in use. Deleting...
+	title Monster Hunter Wilds : Save File Backup Script --- File %%F is not in use. Deleting...
         del /f /q "%%F" >nul 2>&1
         echo File %%F deleted.
 		timeout /t 5 >nul
     ) else (
         echo File %%F is in use. Skipping deletion.
-		title Monster Hunter Wilds : Save File Backup Script --- File %%F is in use. Skipping deletion.
-		timeout /t 5 >nul
+	title Monster Hunter Wilds : Save File Backup Script --- File %%F is in use. Skipping deletion.
+	timeout /t 5 >nul
     )
 )
 endlocal
