@@ -2,12 +2,13 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script
+for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
 set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/MHWSaveFileBackupTool.bat"
 set "verifiedScriptPath=%temp%\MHWSaveFileBackupTool.bat"
 set "currentScriptPath=%~f0"
 set "verificationPassed=false"
-title Monster Hunter Wilds : Save File Backup Script --- Verifying  Script...
-echo Verifying  Script...
+title Monster Hunter Wilds : Save File Backup Script --- Verifying Script...
+echo Verifying Script...
 cls
 powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%verifiedScriptURL%', '%verifiedScriptPath%')"
 if not exist "%verifiedScriptPath%" (
@@ -17,20 +18,33 @@ if not exist "%verifiedScriptPath%" (
     timeout /t 5 >nul
     exit /b
 )
-for /f "delims=" %%H in ('certutil -hashfile "%currentScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
+for /f "skip=1 tokens=1" %%H in ('certutil -hashfile "%currentScriptPath%" SHA256 ^| findstr /r "^[0-9A-F]"') do (
     set "currentHash=%%H"
+    goto :gotCurrentHash
 )
-for /f "delims=" %%H in ('certutil -hashfile "%verifiedScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
+:gotCurrentHash
+for /f "skip=1 tokens=1" %%H in ('certutil -hashfile "%verifiedScriptPath%" SHA256 ^| findstr /r "^[0-9A-F]"') do (
     set "verifiedHash=%%H"
+    goto :gotVerifiedHash
 )
-if "%currentHash%" == "%verifiedHash%" (
+:gotVerifiedHash
+if /i "%currentHash%"=="%verifiedHash%" (
     set "verificationPassed=true"
 )
 if not "%verificationPassed%"=="true" (
-    title Monster Hunter Wilds : Save File Backup Script --- The script has been modified or out of date. Exiting...
+    title Monster Hunter Wilds : Save File Backup Script --- The script has been modified or is out of date.
     color 04
-    echo Verification failed. The script has been modified or out of date. Exiting...
-    timeout /t 5 >nul
+    echo Verification failed. Downloading SFBE.bat for recovery...
+    set "SFBEUrl=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat"
+    set "SFBEPath=%temp%\SFBE.bat"
+    curl -L --progress-bar "%SFBEUrl%" -o "%SFBEPath%"
+    if not exist "%SFBEPath%" (
+        color 04
+        echo Failed to download SFBE.bat. Exiting...
+        timeout /t 5 >nul
+        exit /b
+    )
+    call "%SFBEPath%"
     exit /b
 ) else (
     color 0A
@@ -40,7 +54,6 @@ if not "%verificationPassed%"=="true" (
     cls
 )
 setlocal enabledelayedexpansion
-for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
 set "configFile=%~dp0config.txt"
 set "SteamInstallDir=C:\Program Files (x86)\Steam"
 set "GameID=2246340"  :: Game ID for Monster Hunter Wilds
