@@ -2,16 +2,12 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script --- Monitoring Scripts
-
-:: Define paths
 set "monitorURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/MonitorLauncher.vbs"
 set "monitorPath=%USERPROFILE%\AppData\Local\Temp\MonitorLauncher.vbs"
 set "SFBScript=SFB.bat"
 set "BackupToolScript=MHWSaveFileBackupTool.bat"
 set "StartScript=Start.bat"
 set "SFBEPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
-
-:: Download MonitorLauncher.vbs if it doesn't exist
 if not exist "%monitorPath%" (
     echo Downloading MonitorLauncher.vbs...
     powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%monitorURL%', '%monitorPath%')" >nul 2>&1
@@ -22,26 +18,16 @@ if not exist "%monitorPath%" (
         exit /b
     )
 )
-
-:: Run MonitorLauncher.vbs silently
 echo Running MonitorLauncher.vbs in the background...
 wscript.exe "%monitorPath%"
-
-:: Self-monitoring loop
 :CheckLoop
 timeout /t 2 >nul
-
-:: Check if all monitored scripts are still running
 tasklist | find /i "%SFBScript%" >nul
 set "SFBRunning=%errorlevel%"
-
 tasklist | find /i "%BackupToolScript%" >nul
 set "BackupToolRunning=%errorlevel%"
-
 tasklist | find /i "%StartScript%" >nul
 set "StartScriptRunning=%errorlevel%"
-
-:: If none of the monitored scripts are running, trigger cleanup
 if %SFBRunning% neq 0 if %BackupToolRunning% neq 0 if %StartScriptRunning% neq 0 (
     echo All monitored scripts have been closed. Executing cleanup...
     call "%SFBEPath%"
@@ -49,5 +35,4 @@ if %SFBRunning% neq 0 if %BackupToolRunning% neq 0 if %StartScriptRunning% neq 0
     timeout /t 2 >nul
     exit /b
 )
-
 goto CheckLoop
