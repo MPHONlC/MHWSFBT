@@ -9,12 +9,15 @@ set "handleZip=%tempDir%\Handle.zip"
 set "handlePath=%tempDir%\handle.exe"
 set "downloadURL=https://download.sysinternals.com/files/Handle.zip"
 
+rem ====================================================
+rem SECTION 1 – Check for handle.exe & Download if Needed
+rem ====================================================
 if exist "%handlePath%" (
     echo [INFO] handle.exe already exists in %tempDir%. Skipping download.
 ) else (
     echo [INFO] Downloading Handle.exe from Sysinternals...
     title Monster Hunter Wilds : Save File Backup Script - Downloading Handle.exe...
-    rem Using curl so the progress bar displays job progress, transferred bytes, total bytes, and transfer rate.
+    rem Using curl to display progress
     curl -L --progress-bar "%downloadURL%" -o "%handleZip%"
     if errorlevel 1 (
         echo [ERROR] Failed to download Handle.zip. Exiting...
@@ -34,6 +37,9 @@ if exist "%handlePath%" (
     echo [INFO] handle.exe is ready.
 )
 
+rem ====================================================
+rem SECTION 2 – Check if MonsterHunterWilds.exe Is Running
+rem ====================================================
 :CHECK_MHW
 tasklist | findstr /i "MonsterHunterWilds.exe" >nul
 if %errorlevel%==0 (
@@ -44,42 +50,52 @@ if %errorlevel%==0 (
     echo [INFO] MonsterHunterWilds.exe is not running. Proceeding with cleanup.
 )
 
+rem ====================================================
+rem SECTION 3 – Terminate and Delete Files From %tempDir%
+rem ====================================================
 setlocal EnableDelayedExpansion
-set "filesList=Start.bat SFB.bat handle.exe handle64a.exe Monitor.bat MonitorLauncher.bat"
+set "filesList=handle64a.exe SFB.bat Monitor.bat MHWSaveFileBackupTool.bat Start.bat MonitorLauncher.bat"
 
 for %%F in (%filesList%) do (
     if exist "%tempDir%\%%F" (
         echo.
         echo [INFO] Processing file: %tempDir%\%%F
-        rem For handle.exe, skip checking if the file is in use.
-        if /I "%%F"=="handle.exe" (
-            set "handleResult=0"
-        ) else (
-            rem Check if the file is in use using handle.exe:
-            "%handlePath%" "%tempDir%\%%F" | findstr /i "No matching handles" >nul
-            set "handleResult=!errorlevel!"
-        )
-        
-        rem Check if a process with that file name is running:
+        rem Check if a process with the file name is running:
         tasklist | findstr /i "%%F" >nul
-        set "tasklistResult=!errorlevel!"
-
-        if !handleResult! equ 0 if !tasklistResult! equ 1 (
-            echo [INFO] File %%F is not in use. Deleting...
-            title Monster Hunter Wilds : Save File Backup Script --- File %%F is not in use. Deleting...
-            del /f /q "%tempDir%\%%F" >nul 2>&1
-            echo [INFO] File %%F deleted.
-            timeout /t 5 >nul
-        ) else (
-            echo [INFO] File %%F is in use. Skipping deletion.
-            title Monster Hunter Wilds : Save File Backup Script --- File %%F is in use. Skipping deletion.
-            timeout /t 5 >nul
+        if !errorlevel! equ 0 (
+            echo [INFO] File %%F is running as a process. Attempting to terminate...
+            taskkill /f /im "%%F" >nul 2>&1
+            if !errorlevel! neq 0 (
+                echo [ERROR] Failed to terminate process for %%F. Skipping deletion.
+                timeout /t 5 >nul
+                continue
+            ) else (
+                echo [INFO] Process for %%F terminated successfully.
+            )
         )
+        rem Attempt to delete the file
+        echo [INFO] Deleting file: %%F
+        del /f /q "%tempDir%\%%F" >nul 2>&1
+        if exist "%tempDir%\%%F" (
+            echo [ERROR] Failed to delete %%F. Retrying after 5 seconds...
+            timeout /t 5 >nul
+            del /f /q "%tempDir%\%%F" >nul 2>&1
+        )
+        if not exist "%tempDir%\%%F" (
+            echo [INFO] File %%F deleted successfully.
+        ) else (
+            echo [ERROR] Unable to delete %%F. Moving to next file.
+        )
+    ) else (
+        echo [INFO] File %%F does not exist. Skipping...
     )
 )
 endlocal
+
+rem ====================================================
+rem SECTION 4 – Script Completion
+rem ====================================================
 echo [INFO] Cleanup completed. Exiting...
 title Monster Hunter Wilds : Save File Backup Script --- Cleanup completed. Exiting...
 timeout /t 2 >nul
-del /f /q "%handlePath%" >nul 2>&1
 exit /b
