@@ -64,13 +64,13 @@ set count=0
        echo Failed to load script.
        title Monster Hunter Wilds : Save File Backup Script --- Failed to load script.
        if !count! lss 3 (
-	       color 06
+	   color 06
            echo Retrying to load script...
            title Monster Hunter Wilds : Save File Backup Script --- Retrying to load script...
            timeout /t 2 >nul
            goto download_loop
        ) else (
-	       color 04
+	   color 04
            echo [!] Failed to load script after 3 attempts.
            title Monster Hunter Wilds : Save File Backup Script --- [!] Failed to load script after 3 attempts.
            endlocal
@@ -110,26 +110,26 @@ set count=0
        title Monster Hunter Wilds : Save File Backup Script --- Script Verification FAILED.
        echo Script Verification FAILED.
        if !count! lss 3 (
-	       color 05
+	   color 05
            title Monster Hunter Wilds : Save File Backup Script --- Retrying to load...
            echo Retrying to load...
            timeout /t 2 >nul
            goto download_loop
        ) else (
-	       color 04
+	   color 04
            title Monster Hunter Wilds : Save File Backup Script --- [!] Failed to load and verify script after 3 attempts.
            echo [!] Failed to load and verify script after 3 attempts.
            set "SFBEUrl=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat"
            set "SFBEPath=%dest%\SFBE.bat"
            curl -L --progress-bar "%SFBEUrl%" -o "%SFBEPath%"
            if exist "%SFBEPath%" (
-		       color 06
-			   title Monster Hunter Wilds : Save File Backup Script --- Executing cleanup Script due to verification failure...
+	       color 06
+	       title Monster Hunter Wilds : Save File Backup Script --- Executing cleanup Script due to verification failure...
                echo Executing cleanup Script due to verification failure...
                call "%SFBEPath%"
            ) else (
-		       color 04
-			   title Monster Hunter Wilds : Save File Backup Script --- Failed to execute.
+	       color 04
+	       title Monster Hunter Wilds : Save File Backup Script --- Failed to execute.
                echo Failed to do cleanup.
            )
            
