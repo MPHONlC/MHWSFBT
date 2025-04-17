@@ -6,10 +6,14 @@ set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/he
 set "verifiedScriptPath=%temp%\MHWSaveFileBackupTool.bat"
 set "currentScriptPath=%~f0"
 set "verificationPassed=false"
+title Monster Hunter Wilds : Save File Backup Script --- Verifying  Script...
 echo Verifying  Script...
+cls
 powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%verifiedScriptURL%', '%verifiedScriptPath%')"
 if not exist "%verifiedScriptPath%" (
+	color 04
     echo Failed to verify the script. Exiting...
+	title Monster Hunter Wilds : Save File Backup Script --- Failed to verify the script. Exiting...
     timeout /t 5 >nul
     exit /b
 )
@@ -24,11 +28,14 @@ if "%currentHash%" == "%verifiedHash%" (
 )
 if not "%verificationPassed%"=="true" (
     title Monster Hunter Wilds : Save File Backup Script --- The script has been modified or out of date. Exiting...
+	color 04
     echo Verification failed. The script has been modified or out of date. Exiting...
     timeout /t 5 >nul
     exit /b
 ) else (
     echo Verification passed. Continuing...
+	color 04
+	title Monster Hunter Wilds : Save File Backup Script --- Verification passed. Continuing...
 	timeout /t 5 >nul
 	cls
 )
@@ -161,9 +168,25 @@ if %errorlevel%==0 (
 timeout /t 5 > nul
 set "secondaryScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
 set "tempScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
+set "downloadURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
 if not exist "%tempScript%" (
-    copy "%secondaryScript%" "%tempScript%" >nul
+    echo Script not found. Downloading...
+	title Monster Hunter Wilds : Save File Backup Script --- Script not found. Downloading...
+    BITSAdmin /transfer "SFBDownloadJob" "%downloadURL%" "%tempScript%" >nul 2>&1
+    if not exist "%tempScript%" (
+		title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download script. Exiting...
+        echo Error: Failed to download script. Exiting...
+        timeout /t 5 >nul
+        exit /b
+    )
     attrib +R "%tempScript%"
+	title Monster Hunter Wilds : Save File Backup Script --- script downloaded and marked as read-only.
+    echo script downloaded and marked as read-only.
+	timeout /t 2 >nul
+) else (
+	title Monster Hunter Wilds : Save File Backup Script --- script already exists. Skipping download.
+    echo script already exists. Skipping download.
+	timeout /t 2 >nul
 )
 call "%secondaryScript%"
 exit /b
