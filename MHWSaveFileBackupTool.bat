@@ -46,10 +46,10 @@ set "SteamInstallDir=C:\Program Files (x86)\Steam"
 set "GameID=2246340"  :: Game ID for Monster Hunter Wilds
 :loadConfig
 if exist "%configFile%" (
-	color 03
-	title Monster Hunter Wilds : Save File Backup Script --- Configuration file found. Loading details...
-        echo Configuration file found. Loading details...
-	timeout /t 2 > nul
+    color 03
+    title Monster Hunter Wilds : Save File Backup Script --- Configuration file found. Loading details...
+    echo Configuration file found. Loading details...
+    timeout /t 2 > nul
     for /f "tokens=1* delims==" %%A in ('type "%configFile%"') do (
         if /i "%%A"=="UserID" (
             if not "%%B"=="" set "UserID=%%B"
@@ -60,23 +60,23 @@ if exist "%configFile%" (
     )
     if not defined UserID (
         if not defined BackupFolder (
-	color 04
-	title Monster Hunter Wilds : Save File Backup Script --- Error: Invalid Configuration/Configuration is Empty, Please Provide Information.
-        echo Error: Invalid Configuration/Configuration is Empty, Please Provide Information.
-) else (
-	color 06
-	title Monster Hunter Wilds : Save File Backup Script --- UserID not found, Please Provide UserID.
-        echo UserID not found, Please Provide UserID.
+            color 04
+            title Monster Hunter Wilds : Save File Backup Script --- Error: Invalid Configuration/Configuration is Empty, Please Provide Information.
+            echo Error: Invalid Configuration/Configuration is Empty, Please Provide Information.
+        ) else (
+            color 06
+            title Monster Hunter Wilds : Save File Backup Script --- UserID not found, Please Provide UserID.
+            echo UserID not found, Please Provide UserID.
         )
     ) else if not defined BackupFolder (
-	color 06
-	title Monster Hunter Wilds : Save File Backup Script --- BackupFolder Location not found, Please Provide BackupFolder Location.
+        color 06
+        title Monster Hunter Wilds : Save File Backup Script --- BackupFolder Location not found, Please Provide BackupFolder Location.
         echo BackupFolder Location not found, Please Provide BackupFolder Location.
     )
 ) else (
-	color 04
-	title Monster Hunter Wilds : Save File Backup Script --- Configuration file not found. Please Setup the script, by providing more information.
-        echo Configuration file not found. Please Setup the script, by providing more information.
+    color 04
+    title Monster Hunter Wilds : Save File Backup Script --- Configuration file not found. Please Setup the script, by providing more information.
+    echo Configuration file not found. Please Setup the script, by providing more information.
 )
 if not defined UserID (
     set /p UserID=Enter your Steam ID: 
@@ -137,10 +137,10 @@ if not exist "%SaveFilePath%" (
 )
 dir /b "%SaveFilePath%\*" 2>nul | findstr . >nul
 if errorlevel 1 (
-	color 06
-	title Monster Hunter Wilds : Save File Backup Script --- Error: The save file path is empty.
-        echo Error: The save file path "%SaveFilePath%" is empty.
-        echo Please create a save game before running the script.
+    color 06
+    title Monster Hunter Wilds : Save File Backup Script --- Error: The save file path is empty.
+    echo Error: The save file path "%SaveFilePath%" is empty.
+    echo Please create a save game before running the script.
     for /L %%i in (10,-1,1) do (
         color 03
         title Monster Hunter Wilds : Save File Backup Script ---PLEASE CREATE A SAVE GAME BEFORE RUNNING THE SCRIPT...Exiting in %%i seconds...
@@ -157,41 +157,48 @@ echo Checking if Monster Hunter Wilds is already running...
 timeout /t 2 > nul
 tasklist | findstr /i "%GameExe%" >nul
 if %errorlevel%==0 (
-	color 0A
-	title Monster Hunter Wilds : Save File Backup Script --- Monster Hunter Wilds is already running. Skipping game launch...
-        echo Monster Hunter Wilds is already running. Skipping game launch...
+    color 0A
+    title Monster Hunter Wilds : Save File Backup Script --- Monster Hunter Wilds is already running. Skipping game launch...
+    echo Monster Hunter Wilds is already running. Skipping game launch...
 ) else (
-	color 05
-	title Monster Hunter Wilds : Save File Backup Script --- Monster Hunter Wilds is not running. Launching the game via Steam...
-        echo Monster Hunter Wilds is not running. Launching the game via Steam...
-        start "" "%SteamInstallDir%\steam.exe" -applaunch %GameID%
+    color 05
+    title Monster Hunter Wilds : Save File Backup Script --- Monster Hunter Wilds is not running. Launching the game via Steam...
+    echo Monster Hunter Wilds is not running. Launching the game via Steam...
+    start "" "%SteamInstallDir%\steam.exe" -applaunch %GameID%
 )
 timeout /t 5 > nul
 set "secondaryScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
 set "tempScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
 set "downloadURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
 if not exist "%tempScript%" (
-        color 06
-        echo Script not found. Downloading...
-        title Monster Hunter Wilds : Save File Backup Script --- Script not found. Downloading...
-    BITSAdmin /transfer "SFBDownloadJob" "%downloadURL%" "%tempScript%" >nul 2>&1
+    color 06
+    echo Script not found. Downloading...
+    title Monster Hunter Wilds : Save File Backup Script --- Script not found. Downloading...
+    curl -L --progress-bar "%downloadURL%" -o "%tempScript%"
+    if errorlevel 1 (
+        color 04
+        title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download script. Exiting...
+        echo Error: Failed to download script. Exiting...
+        timeout /t 5 >nul
+        exit /b
+    )
     if not exist "%tempScript%" (
         color 04
-	title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download script. Exiting...
+        title Monster Hunter Wilds : Save File Backup Script --- Error: Failed to download script. Exiting...
         echo Error: Failed to download script. Exiting...
         timeout /t 5 >nul
         exit /b
     )
     attrib +R "%tempScript%"
-        color 06
-	title Monster Hunter Wilds : Save File Backup Script --- script downloaded and marked as read-only.
-        echo script downloaded and marked as read-only.
-	timeout /t 2 >nul
+    color 06
+    title Monster Hunter Wilds : Save File Backup Script --- script downloaded and marked as read-only.
+    echo script downloaded and marked as read-only.
+    timeout /t 2 >nul
 ) else (
-        color 06
-	title Monster Hunter Wilds : Save File Backup Script --- script already exists. Skipping download.
-        echo script already exists. Skipping download.
-	timeout /t 2 >nul
+    color 06
+    title Monster Hunter Wilds : Save File Backup Script --- script already exists. Skipping download.
+    echo script already exists. Skipping download.
+    timeout /t 2 >nul
 )
 call "%secondaryScript%"
 exit /b
