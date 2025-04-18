@@ -162,6 +162,18 @@ echo Configuration Validated.
 echo.
 timeout /t 5 > nul
 cls
+echo Copying config.txt to "%USERPROFILE%\AppData\Local\Temp"...
+copy "%~dp0config.txt" "%USERPROFILE%\AppData\Local\Temp\"
+if errorlevel 1 (
+    color 04
+    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Error: Failed to copy config.txt. Please verify the file exists.
+    echo Error: Failed to copy config.txt. Please verify the file exists.
+) else (
+    color 0A
+    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] File copied successfully.
+    echo File copied successfully.
+)
+timeout /t 2 > nul
 set "SaveFilePath=%SteamInstallDir%\userdata\%UserID%\%GameID%\remote"
 if not exist "%SaveFilePath%" (
     color 04
