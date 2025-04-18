@@ -56,6 +56,12 @@ for %%F in (%otherFiles%) do (
        del /F /Q "%USERPROFILE%\AppData\Local\Temp\%%F"
     )
 )
+del /f /s /q "%temp%\*" > nul 2>&1
+color 0A
+title Monster Hunter Wilds : Save File Backup Script --- [CLEANUP] Temporary files cleaned.
+echo Temporary files cleaned.
+timeout /t 1 >nul
+cls
 color 05
 title Monster Hunter Wilds : Save File Backup Script --- [CLEANUP] Emptying Recycle Bin...
 echo Emptying Recycle Bin...
