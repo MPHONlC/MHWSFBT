@@ -38,7 +38,7 @@ if not "%verificationPassed%"=="true" (
     echo ===========================                         ===========================
     echo Verification passed. Continuing...
 	echo ===========================                         ===========================
-    color 04
+    color 0A
     title Monster Hunter Wilds : Save File Backup Script --- [MAIN] Verification passed. Continuing...
     timeout /t 5 >nul
     cls
