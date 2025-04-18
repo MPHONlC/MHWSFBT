@@ -3,18 +3,15 @@ cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script --- [CLEANUP] Starting Cleanup...
 
-rem --- Disable QuickEdit for reliability ---
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do (
     reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
 )
 
-rem --- Set up Temp directory and download details ---
 set "tempDir=%USERPROFILE%\AppData\Local\Temp"
 set "handleZip=%tempDir%\Handle.zip"
 set "handlePath=%tempDir%\handle.exe"
 set "downloadURL=https://download.sysinternals.com/files/Handle.zip"
 
-rem --- Download and extract handle.exe if not already present ---
 if exist "%handlePath%" (
     color 06
     title Monster Hunter Wilds : Save File Backup Script --- [CLEANUP] handle.exe already exists in %tempDir%. Skipping download.
@@ -52,7 +49,6 @@ if exist "%handlePath%" (
     cls
 )
 
-rem --- Wait until MonsterHunterWilds.exe is no longer running ---
 color 0A
 :CHECK_MHW
 tasklist | findstr /i "MonsterHunterWilds.exe" >nul
@@ -70,7 +66,6 @@ if %errorlevel%==0 (
     cls
 )
 
-rem --- Double-check that the game has not restarted ---
 :WAIT_FOR_TERMINATION
 tasklist | findstr /i "MonsterHunterWilds.exe" >nul
 if %errorlevel%==0 (
@@ -79,22 +74,19 @@ if %errorlevel%==0 (
     goto WAIT_FOR_TERMINATION
 )
 
-rem --- Define list of files to be terminated and deleted ---
 set "filesList=Start.bat SFB.bat Monitor.bat MonitorLauncher.bat MHWSaveFileBackupTool.bat SFBE.bat hash_Monitor.txt hash_SFB.txt hash_Monitor.bat.txt hash_SFB.bat.txt SFB Monitor hashtemp.tmp handle.exe handle64.exe handle64a.exe handle.zip"
-
-rem --- Enable delayed variable expansion for inner loops ---
 setlocal EnableDelayedExpansion
 
 echo.
 echo [INFO] Attempting to terminate processes associated with files in list...
 for %%F in (%filesList%) do (
     set "currentFile=%%F"
-    rem Use PowerShell to retrieve process IDs of any process whose CommandLine contains the file name.
+
     for /f "delims=" %%A in ('powershell -noprofile -command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match '!currentFile!' } | ForEach-Object { $_.ProcessId }"') do (
          echo [INFO] Terminating process with PID %%A for !currentFile!...
          taskkill /PID %%A /F >nul 2>&1
     )
-    rem If the file is an executable, also attempt termination by image name.
+
     echo !currentFile! | findstr /i "\.exe$" >nul
     if !errorlevel! equ 0 (
          echo [INFO] Attempting to terminate process image !currentFile!...
@@ -120,8 +112,6 @@ for %%F in (%filesList%) do (
     timeout /t 1 >nul
 )
 endlocal
-
-rem --- Empty the Recycle Bin and exit ---
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script --- [CLEANUP] Emptying Recycle Bin...
