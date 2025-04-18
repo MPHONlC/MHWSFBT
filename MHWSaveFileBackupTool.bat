@@ -2,7 +2,6 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script
-@echo off
 setlocal enabledelayedexpansion
 
 set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/MHWSaveFileBackupTool.bat"
