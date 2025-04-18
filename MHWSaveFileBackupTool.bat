@@ -6,16 +6,16 @@ set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/he
 set "verifiedScriptPath=%temp%\MHWSaveFileBackupTool.bat"
 set "currentScriptPath=%~f0"
 set "verificationPassed=false"
-title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Verifying  Script...
-echo Verifying  Script...
+title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Verifying Script...
+echo Verifying Script...
 cls
 powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%verifiedScriptURL%', '%verifiedScriptPath%')"
 if not exist "%verifiedScriptPath%" (
     color 04
-    echo Failed to verify the script. Exiting...
-    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Failed to verify the script. Exiting...
+    echo Failed to verify the script. Downloading fallback script...
+    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Failed to verify the script. Downloading fallback...
     timeout /t 5 >nul
-    exit /b
+    goto :DownloadFallback
 )
 for /f "delims=" %%H in ('certutil -hashfile "%currentScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
     set "currentHash=%%H"
@@ -23,15 +23,15 @@ for /f "delims=" %%H in ('certutil -hashfile "%currentScriptPath%" SHA256 ^| fin
 for /f "delims=" %%H in ('certutil -hashfile "%verifiedScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
     set "verifiedHash=%%H"
 )
-if "%currentHash%" == "%verifiedHash%" (
+if "%currentHash%"=="%verifiedHash%" (
     set "verificationPassed=true"
 )
 if not "%verificationPassed%"=="true" (
-    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] The script has been modified or out of date. Exiting...
+    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Verification failed. Downloading fallback script...
     color 04
-    echo Verification failed. The script has been modified or out of date. Exiting...
+    echo Verification failed. Downloading fallback script SFBE.bat...
     timeout /t 5 >nul
-    exit /b
+    goto :DownloadFallback
 ) else (
     color 0A
     echo Verification passed. Continuing...
@@ -39,6 +39,23 @@ if not "%verificationPassed%"=="true" (
     timeout /t 5 >nul
     cls
 )
+
+:DownloadFallback
+set "fallbackURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat"
+set "fallbackPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
+curl -L --progress-bar "%fallbackURL%" -o "%fallbackPath%"
+if not exist "%fallbackPath%" (
+    color 04
+	title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Failed to download fallback script. Exiting...
+    echo Failed to download fallback script. Exiting...
+    timeout /t 5 >nul
+    exit /b
+)
+color 06
+title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Fallback script downloaded. Running fallback script...
+echo Fallback script downloaded. Running fallback script...
+call "%fallbackPath%"
+exit /b
 color 0A
 setlocal enabledelayedexpansion
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
