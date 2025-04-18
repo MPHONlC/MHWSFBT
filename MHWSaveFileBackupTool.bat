@@ -252,46 +252,32 @@ if not exist "%secondaryScript%" (
     curl -L --progress-bar "%downloadURL%" -o "%secondaryScript%"
     if not exist "%secondaryScript%" (
         color 04
+		title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Error: Failed to download Script.
         echo Error: Failed to download Script.
-		timeout /t 2 > nul
-        goto Fallback
-    )
-
-    for /f "delims=" %%H in ('certutil -hashfile "%secondaryScript%" SHA256 ^| findstr /r "[0-9A-F]"') do (
-        set "downloadedHash=%%H"
-        goto :hashVerified
-    )
-    :hashVerified
-    if /I not "%downloadedHash%"=="%expectedSFBHash%" (
-        color 04
-        echo Error: Script Hash verification failed.
-		timeout /t 2 > nul
-        goto Fallback
-    ) else (
-        color 0A
-        echo Script downloaded and verified.
         timeout /t 2 >nul
-        call "%secondaryScript%"
-        exit /b
-    )
-) else (
-    color 03
-    echo Script already exists. Skipping download.
-    timeout /t 2 >nul
-    for /f "delims=" %%H in ('certutil -hashfile "%secondaryScript%" SHA256 ^| findstr /r "[0-9A-F]"') do (
-        set "downloadedHash=%%H"
-        goto :hashVerifiedExist
-    )
-    :hashVerifiedExist
-    if /I not "%downloadedHash%"=="%expectedSFBHash%" (
-        color 04
-        echo Error: Script Hash verification failed.
-		timeout /t 2 > nul
         goto Fallback
-    ) else (
-        call "%secondaryScript%"
-        exit /b
     )
+)
+
+for /f "skip=1 tokens=1" %%H in ('certutil -hashfile "%secondaryScript%" SHA256 ^| findstr /r "^[0-9A-F]"') do (
+    set "downloadedHash=%%H"
+    goto HashVerified
+)
+
+:HashVerified
+if /I "%downloadedHash%" NEQ "%expectedSFBHash%" (
+    color 04
+	title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Error: Script Hash verification failed.
+    echo Error: Script Hash verification failed.
+    timeout /t 2 >nul
+    goto Fallback
+) else (
+    color 0A
+	title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Script downloaded and verified.
+    echo Script downloaded and verified.
+    timeout /t 2 >nul
+    call "%secondaryScript%"
+    exit /b
 )
 
 :Fallback
@@ -301,12 +287,14 @@ title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Downloading 
 curl -L --progress-bar "%fallbackURL%" -o "%fallbackScript%"
 if not exist "%fallbackScript%" (
     color 04
+	title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Error: Failed to download fallback script.
     echo Error: Failed to download fallback script.
     timeout /t 5 >nul
     exit /b
 )
 color 05
+title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Fallback script downloaded. Executing fallback script...
 echo Fallback script downloaded. Executing fallback script...
-timeout /t 2 > nul
+timeout /t 2 >nul
 call "%fallbackScript%"
 exit /b
