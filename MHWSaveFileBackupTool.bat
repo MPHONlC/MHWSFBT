@@ -64,12 +64,13 @@ color 06
 title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Fallback script downloaded. Running fallback script...
 echo Fallback script downloaded. Running fallback script...
 call "%fallbackPath%"
-exit /b
+goto :EOF
 
 :Continue
 color 0A
 title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Executing main script operations...
 echo Executing main script operations...
+timeout /t 2 >nul
 cls
 
 color 0A
