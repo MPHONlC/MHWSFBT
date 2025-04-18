@@ -4,7 +4,7 @@ taskkill /F /FI "WINDOWTITLE ne MHWSaveFileBackupScript : WINDOW 24592" /IM cmd.
 taskkill /F /IM powershell.exe >nul 2>&1
 echo Loading...
 cls
-timeout /t 5 > nul
+timeout /t 10 > nul
 setlocal enabledelayedexpansion
 
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do (
@@ -15,8 +15,8 @@ set "downloadDir=%USERPROFILE%\AppData\Local\Temp"
 set "MonitorURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/Monitor.bat"
 set "SFBURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
 set "SFBEURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat"
-set "ExpectedMonitorHash=2A253D1C13DEC3616EACB49CD12FD86D48E97695912084225F10964FE43F97A3"
-set "ExpectedSFBHash=A0FF9E0605070B40B53BB46BB787222A4B78023B4610439287E5F96100E1FFCD"
+set "ExpectedMonitorHash=0EBB9F738B9F640628BFB489401D9FF7C6F21F93742697A5C079DA03F42074B9"
+set "ExpectedSFBHash=5473B102F3A80F7455B7FDC01E047F972A3E3FCECC85F3E983F1D218689D3035"
 
 call :DownloadWithRetry "%MonitorURL%" "Monitor.bat"
 if errorlevel 1 goto FallbackSFBE
@@ -63,7 +63,6 @@ if exist "%BackupTool%" (
     timeout /t 10 > nul
 )
 
-:: Prevent running into the subroutine definitions 
 goto :EOF
 
 :FallbackSFBE
