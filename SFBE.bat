@@ -75,43 +75,61 @@ if %errorlevel%==0 (
 )
 
 set "filesList=Start.bat SFB.bat Monitor.bat MonitorLauncher.bat MHWSaveFileBackupTool.bat SFBE.bat hash_Monitor.txt hash_SFB.txt hash_Monitor.bat.txt hash_SFB.bat.txt SFB Monitor hashtemp.tmp handle.exe handle64.exe handle64a.exe handle.zip"
+
 setlocal EnableDelayedExpansion
 
 echo.
 echo [INFO] Attempting to terminate processes associated with files in list...
 for %%F in (%filesList%) do (
     set "currentFile=%%F"
-
-    for /f "delims=" %%A in ('powershell -noprofile -command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match '!currentFile!' } | ForEach-Object { $_.ProcessId }"') do (
-         echo [INFO] Terminating process with PID %%A for !currentFile!...
-         taskkill /PID %%A /F >nul 2>&1
-    )
-
-    echo !currentFile! | findstr /i "\.exe$" >nul
-    if !errorlevel! equ 0 (
-         echo [INFO] Attempting to terminate process image !currentFile!...
-         taskkill /f /im "!currentFile!" >nul 2>&1
+    if /I not "%%F"=="SFBE.bat" (
+         for /f "delims=" %%A in ('powershell -noprofile -command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match '!currentFile!' } | ForEach-Object { $_.ProcessId }"') do (
+              echo [INFO] Terminating process with PID %%A for !currentFile!...
+              taskkill /PID %%A /F >nul 2>&1
+         )
+         echo !currentFile! | findstr /i "\.exe$" >nul
+         if !errorlevel! equ 0 (
+              echo [INFO] Attempting to terminate process image !currentFile!...
+              taskkill /f /im "!currentFile!" >nul 2>&1
+         )
+    ) else (
+         echo [INFO] Skipping termination for SFBE.bat.
     )
     timeout /t 1 >nul
 )
 
 echo.
-echo [INFO] Proceeding to delete files from %tempDir%...
+echo [INFO] Proceeding to delete files from %tempDir% (excluding SFBE.bat)...
 for %%F in (%filesList%) do (
-    if exist "%tempDir%\%%F" (
-       echo [INFO] Deleting file %%F...
-       del /f /q "%tempDir%\%%F" >nul 2>&1
-       if exist "%tempDir%\%%F" (
-           echo [ERROR] Unable to delete %%F.
-       ) else (
-           echo [INFO] %%F deleted successfully.
-       )
-    ) else (
-       echo [INFO] %%F not found in %tempDir%. Skipping...
+    if /I not "%%F"=="SFBE.bat" (
+        if exist "%tempDir%\%%F" (
+           echo [INFO] Deleting file %%F...
+           del /f /q "%tempDir%\%%F" >nul 2>&1
+           if exist "%tempDir%\%%F" (
+               echo [ERROR] Unable to delete %%F.
+           ) else (
+               echo [INFO] %%F deleted successfully.
+           )
+        ) else (
+           echo [INFO] %%F not found in %tempDir%. Skipping...
+        )
+        timeout /t 1 >nul
     )
-    timeout /t 1 >nul
+)
+
+if exist "%tempDir%\SFBE.bat" (
+    echo [INFO] Deleting SFBE.bat as the last file...
+    del /f /q "%tempDir%\SFBE.bat" >nul 2>&1
+    if exist "%tempDir%\SFBE.bat" (
+         echo [ERROR] Unable to delete SFBE.bat.
+    ) else (
+         echo [INFO] SFBE.bat deleted successfully.
+    )
+) else (
+    echo [INFO] SFBE.bat not found in %tempDir%. Skipping deletion.
 )
 endlocal
+
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script --- [CLEANUP] Emptying Recycle Bin...
