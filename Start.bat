@@ -16,7 +16,7 @@ set "MonitorURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/Monitor.b
 set "SFBURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
 set "SFBEURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat"
 set "ExpectedMonitorHash=0EBB9F738B9F640628BFB489401D9FF7C6F21F93742697A5C079DA03F42074B9"
-set "ExpectedSFBHash=5473B102F3A80F7455B7FDC01E047F972A3E3FCECC85F3E983F1D218689D3035"
+set "ExpectedSFBHash=E5009B3330E2419B5FBE89077CCA97358845884141E029231D919FAC09CEDF5C"
 
 call :DownloadWithRetry "%MonitorURL%" "Monitor.bat"
 if errorlevel 1 goto FallbackSFBE
