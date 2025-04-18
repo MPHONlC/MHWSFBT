@@ -241,7 +241,7 @@ cls
 color 0A
 set "secondaryScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
 set "downloadURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
-set "expectedSFBHash=A0FF9E0605070B40B53BB46BB787222A4B78023B4610439287E5F96100E1FFCD"
+set "expectedSFBHash=E5009B3330E2419B5FBE89077CCA97358845884141E029231D919FAC09CEDF5C"
 set "fallbackScript=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
 set "fallbackURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat"
 
