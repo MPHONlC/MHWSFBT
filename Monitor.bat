@@ -1,9 +1,9 @@
 @echo off
 cls
 color 0A
-title Monster Hunter Wilds : Save File Backup Script --- Monitoring Scripts
+title Monster Hunter Wilds : Save File Backup Script --- [MONITOR] Monitoring Scripts
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
-echo Monster Hunter Wilds : Save File Backup Script --- [INFO] Waiting for other proccesses to finish loading...
+echo Monster Hunter Wilds : Save File Backup Script --- Waiting for other proccesses to finish loading...
 timeout /t 60 > nul
 cls
 set "SFBScript=SFB.bat"
@@ -13,18 +13,18 @@ set "SFBEPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
 set "SFBEUrl=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat"
 if not exist "%SFBEPath%" (
     color 06
-    title Monster Hunter Wilds : Save File Backup Script --- [INFO] Script not found in %USERPROFILE%\AppData\Local\Temp.
+    title Monster Hunter Wilds : Save File Backup Script --- [MONITOR] Script not found in %USERPROFILE%\AppData\Local\Temp.
     echo [INFO] Script not found in %USERPROFILE%\AppData\Local\Temp. Fetching file...
     curl -L --progress-bar "%SFBEUrl%" -o "%SFBEPath%"
     if errorlevel 1 (
 	color 04
-	title Monster Hunter Wilds : Save File Backup Script --- [ERROR] Failed to load script. Exiting...
+	title Monster Hunter Wilds : Save File Backup Script --- [MONITOR] Failed to load script. Exiting...
         echo [ERROR] Failed to load script. Exiting...
         timeout /t 2 >nul
         exit /b
     )
     color 0A
-    title Monster Hunter Wilds : Save File Backup Script --- [INFO] Scriptloaded successfully.
+    title Monster Hunter Wilds : Save File Backup Script --- [MONITOR] Scriptloaded successfully.
     echo [INFO] Scriptloaded successfully.
     timeout /t 1 >nul
 ) else (
@@ -56,10 +56,10 @@ if !SFBRunning! EQU 1 goto LoopAgain
 if !BackupToolRunning! EQU 1 goto LoopAgain
 if !StartScriptRunning! EQU 1 goto LoopAgain
 color 06
-title Monster Hunter Wilds : Save File Backup Script --- All monitored scripts have been closed. Executing cleanup...
+title Monster Hunter Wilds : Save File Backup Script --- [MONITOR] All monitored scripts have been closed. Executing cleanup...
 echo All monitored scripts have been closed. Executing cleanup...
 call "%SFBEPath%"
-title Monster Hunter Wilds : Save File Backup Script --- Cleanup completed.
+title Monster Hunter Wilds : Save File Backup Script --- [MONITOR] Cleanup completed.
 echo Cleanup completed.
 timeout /t 2 >nul
 exit /b
