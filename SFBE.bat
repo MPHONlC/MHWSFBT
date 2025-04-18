@@ -1,8 +1,8 @@
 @echo off
 cls
 color 0A
-title MHWSaveFileBackupScript : WINDOW 24592
-taskkill /F /FI "WINDOWTITLE ne MHWSaveFileBackupScript : WINDOW 24592" /IM cmd.exe >nul 2>&1
+title MHWSaveFileBackupScript : WINDOW 53057
+taskkill /F /FI "WINDOWTITLE ne MHWSaveFileBackupScript : WINDOW 53057" /IM cmd.exe >nul 2>&1
 taskkill /F /IM powershell.exe >nul 2>&1
 echo Loading...
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
