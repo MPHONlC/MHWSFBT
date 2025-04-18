@@ -2,13 +2,19 @@
 cls
 color 0A
 title Monster Hunter Wilds : Save File Backup Script
+@echo off
+setlocal enabledelayedexpansion
+
 set "verifiedScriptURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/MHWSaveFileBackupTool.bat"
 set "verifiedScriptPath=%temp%\MHWSaveFileBackupTool.bat"
 set "currentScriptPath=%~f0"
 set "verificationPassed=false"
+
 title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Verifying Script...
 echo Verifying Script...
 cls
+
+rem Download the verified version of the script
 powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%verifiedScriptURL%', '%verifiedScriptPath%')"
 if not exist "%verifiedScriptPath%" (
     color 04
@@ -17,15 +23,21 @@ if not exist "%verifiedScriptPath%" (
     timeout /t 5 >nul
     goto :DownloadFallback
 )
+
+rem Calculate the SHA256 hash of the current script
 for /f "delims=" %%H in ('certutil -hashfile "%currentScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
     set "currentHash=%%H"
 )
+
+rem Calculate the SHA256 hash of the downloaded verified script
 for /f "delims=" %%H in ('certutil -hashfile "%verifiedScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
     set "verifiedHash=%%H"
 )
+
 if "%currentHash%"=="%verifiedHash%" (
     set "verificationPassed=true"
 )
+
 if not "%verificationPassed%"=="true" (
     title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Verification failed. Downloading fallback script...
     color 04
@@ -38,6 +50,7 @@ if not "%verificationPassed%"=="true" (
     title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Verification passed. Continuing...
     timeout /t 5 >nul
     cls
+    goto :Continue
 )
 
 :DownloadFallback
@@ -46,7 +59,7 @@ set "fallbackPath=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
 curl -L --progress-bar "%fallbackURL%" -o "%fallbackPath%"
 if not exist "%fallbackPath%" (
     color 04
-	title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Failed to download fallback script. Exiting...
+    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Failed to download fallback script. Exiting...
     echo Failed to download fallback script. Exiting...
     timeout /t 5 >nul
     exit /b
@@ -56,6 +69,13 @@ title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Fallback scr
 echo Fallback script downloaded. Running fallback script...
 call "%fallbackPath%"
 exit /b
+
+:Continue
+color 0A
+title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Executing main script operations...
+echo Executing main script operations...
+cls
+
 color 0A
 setlocal enabledelayedexpansion
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
