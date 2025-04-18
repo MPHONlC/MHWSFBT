@@ -44,7 +44,7 @@ for %%F in (%filesList%) do (
        del /F /Q "%USERPROFILE%\AppData\Local\Temp\%%F"
     )
 )
-set "otherFiles=SFBE.bat handle.exe handle64.exe handle64a.exe handle.zip Eula.txt"
+set "otherFiles=SFBE.bat handle.exe handle64.exe handle64a.exe handle.zip Eula.txt config.txt"
 color 05
 title Monster Hunter Wilds : Save File Backup Script --- [CLEANUP] Deleting additional files from "%USERPROFILE%\AppData\Local\Temp"...
 echo Deleting additional files from "%USERPROFILE%\AppData\Local\Temp"...
