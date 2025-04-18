@@ -36,4 +36,11 @@ This tool will be provided  as is  for free
 Support and Donations: If you find this utility helpful, consider supporting the developer by donating at [BuyMeACoffee](https://buymeacoffee.com/aph0nlc).
 
 Old tool used to repack
-https://github.com/DosX-dev/BatchToApp
+[https://github.com/DosX-dev/BatchToApp](https://github.com/DosX-dev/BatchToApp)
+
+Virustotal Scans as of 4/18/2025
+[https://www.virustotal.com/gui/file/e4d6163aa12e5aebd943a69bc4b5747249f6c2e3b10ec00a270f04a601c3d1d9](https://www.virustotal.com/gui/file/e4d6163aa12e5aebd943a69bc4b5747249f6c2e3b10ec00a270f04a601c3d1d9)
+[https://www.virustotal.com/gui/file/c6cf3621836009d70797fe73287e6ae9f06c5611aee432ced5dcabc83dc37d63](https://www.virustotal.com/gui/file/c6cf3621836009d70797fe73287e6ae9f06c5611aee432ced5dcabc83dc37d63)
+[https://www.virustotal.com/gui/file/e5009b3330e2419b5fbe89077cca97358845884141e029231d919fac09cedf5c](https://www.virustotal.com/gui/file/e5009b3330e2419b5fbe89077cca97358845884141e029231d919fac09cedf5c)
+[https://www.virustotal.com/gui/file/0ebb9f738b9f640628bfb489401d9ff7c6f21f93742697a5c079da03f42074b9](https://www.virustotal.com/gui/file/0ebb9f738b9f640628bfb489401d9ff7c6f21f93742697a5c079da03f42074b9)
+[https://www.virustotal.com/gui/file/8b11235ff6c8d7a923067c96ff84f95e27407fc5c39d5912eb8413cca8ed62af](https://www.virustotal.com/gui/file/8b11235ff6c8d7a923067c96ff84f95e27407fc5c39d5912eb8413cca8ed62af)
