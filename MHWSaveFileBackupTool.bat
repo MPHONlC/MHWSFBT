@@ -13,7 +13,6 @@ title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Verifying Sc
 echo Verifying Script...
 cls
 
-rem Download the verified version of the script
 powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%verifiedScriptURL%', '%verifiedScriptPath%')"
 if not exist "%verifiedScriptPath%" (
     color 04
@@ -23,12 +22,10 @@ if not exist "%verifiedScriptPath%" (
     goto :DownloadFallback
 )
 
-rem Calculate the SHA256 hash of the current script
 for /f "delims=" %%H in ('certutil -hashfile "%currentScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
     set "currentHash=%%H"
 )
 
-rem Calculate the SHA256 hash of the downloaded verified script
 for /f "delims=" %%H in ('certutil -hashfile "%verifiedScriptPath%" SHA256 ^| find /i /v "hash" ^| findstr /r "[0-9A-F]"') do (
     set "verifiedHash=%%H"
 )
