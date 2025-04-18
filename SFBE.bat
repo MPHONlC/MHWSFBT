@@ -8,7 +8,7 @@ for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do (
     reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
 )
 
-rem --- Set up temp directory and download details ---
+rem --- Set up Temp directory and download details ---
 set "tempDir=%USERPROFILE%\AppData\Local\Temp"
 set "handleZip=%tempDir%\Handle.zip"
 set "handlePath=%tempDir%\handle.exe"
@@ -85,29 +85,24 @@ set "filesList=Start.bat SFB.bat Monitor.bat MonitorLauncher.bat MHWSaveFileBack
 rem --- Enable delayed variable expansion for inner loops ---
 setlocal EnableDelayedExpansion
 
-rem --- Process Termination Block ---
 echo.
 echo [INFO] Attempting to terminate processes associated with files in list...
 for %%F in (%filesList%) do (
-    rem Search for processes with a command line that includes %%F
-    for /f "tokens=2 delims==" %%A in ('wmic process where "CommandLine like '%%%F%%'" get ProcessId /value ^| find "="') do (
-         set "PID=%%A"
-         set "PID=!PID: =!"
-         if not "!PID!"=="" (
-              echo [INFO] Terminating process with PID !PID! for %%F...
-              taskkill /PID !PID! /F >nul 2>&1
-         )
+    set "currentFile=%%F"
+    rem Use PowerShell to retrieve process IDs of any process whose CommandLine contains the file name.
+    for /f "delims=" %%A in ('powershell -noprofile -command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match '!currentFile!' } | ForEach-Object { $_.ProcessId }"') do (
+         echo [INFO] Terminating process with PID %%A for !currentFile!...
+         taskkill /PID %%A /F >nul 2>&1
     )
-    rem If the file is an executable, attempt termination by image name
-    echo %%F | findstr /i "\.exe$" >nul
-    if !errorlevel! == 0 (
-         echo [INFO] Attempting to terminate process image %%F...
-         taskkill /f /im "%%F" >nul 2>&1
+    rem If the file is an executable, also attempt termination by image name.
+    echo !currentFile! | findstr /i "\.exe$" >nul
+    if !errorlevel! equ 0 (
+         echo [INFO] Attempting to terminate process image !currentFile!...
+         taskkill /f /im "!currentFile!" >nul 2>&1
     )
     timeout /t 1 >nul
 )
 
-rem --- File Deletion Block ---
 echo.
 echo [INFO] Proceeding to delete files from %tempDir%...
 for %%F in (%filesList%) do (
