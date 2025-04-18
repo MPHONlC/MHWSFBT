@@ -34,3 +34,6 @@ NOTE: THIS TOOL DOES NOT TOUCH YOUR SAVEFILES IN ANY WAY SHAPE OR FORM, IT "ONLY
 
 This tool will be provided  as is  for free
 Support and Donations: If you find this utility helpful, consider supporting the developer by donating at [BuyMeACoffee](https://buymeacoffee.com/aph0nlc).
+
+Old tool used to repack
+https://github.com/DosX-dev/BatchToApp
