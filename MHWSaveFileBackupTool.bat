@@ -240,76 +240,38 @@ timeout /t 5 > nul
 cls
 color 0A
 setlocal enabledelayedexpansion
-
-set "secondaryScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
-set "downloadURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
-set "expectedSFBHash=E5009B3330E2419B5FBE89077CCA97358845884141E029231D919FAC09CEDF5C"
-set "fallbackScript=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
-set "fallbackURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat"
-
-set "retryCount=0"
-:DownloadAttempt
-setlocal enabledelayedexpansion
-if not exist "%secondaryScript%" (
-    color 06
-    echo Script not found. Downloading... (Attempt %retryCount% of 3)
-    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Script not found. Downloading...
-    curl -L --progress-bar "%downloadURL%" -o "%secondaryScript%"
-    if not exist "%secondaryScript%" (
-        set /a retryCount+=1
-        if %retryCount% LSS 3 (
-            timeout /t 2 >nul
-            goto :DownloadAttempt
-        ) else (
-            color 04
-            title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Error: Failed to download script after 3 attempts.
-            echo Error: Failed to download Script after 3 attempts.
-            timeout /t 2 >nul
-            goto :Fallback
-        )
+set "tempFolder=%USERPROFILE%\AppData\Local\Temp"
+if exist "%tempFolder%\SFB.bat" (
+    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Script found. Launching Cleanup Script...
+    echo Script found. Launching Cleanup Script...
+	timeout /t 2 > nul
+    call "%tempFolder%\SFB.bat"
+) else (
+    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Script not found.
+	color 04
+    echo Script not found.
+	timeout /t 2 > nul
+	cls
+	color 03
+	title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Loading Script...
+    echo Loading Script...
+	timeout /t 2 > nul
+	cls
+    curl -k -L "https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat" -o "%tempFolder%\SFBE.bat"
+	
+    if exist "%tempFolder%\SFBE.bat" (
+	    color 0A
+	    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Download complete. Launching Script...
+        echo Download complete. Launching Script...
+		timeout /t 2 > nul
+        call "%tempFolder%\SFBE.bat"
+    ) else (
+	    color 04
+	    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Error: Failed to download Script. Exiting.
+        echo Error: Failed to download Script. Exiting.
+		timeout /t 2 > nul
+        exit /b 1
     )
 )
 
-for /f "skip=1 tokens=*" %%H in ('certutil -hashfile "%secondaryScript%" SHA256 ^| findstr /r "^[0-9A-F]"') do (
-    set "downloadedHash=%%H"
-    goto :HashVerified
-)
-
-:HashVerified
-setlocal enabledelayedexpansion
-set "downloadedHash=!downloadedHash: =!"
-
-if /I "!downloadedHash!" NEQ "%expectedSFBHash%" (
-    color 04
-    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Error: Script Hash verification failed.
-    echo Error: Script Hash verification failed.
-    timeout /t 2 >nul
-    goto :Fallback
-) else (
-    color 0A
-    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Script downloaded and verified.
-    echo Script downloaded and verified.
-    timeout /t 2 >nul
-    call "%secondaryScript%"
-    exit /b
-)
-
-:Fallback
-setlocal enabledelayedexpansion
-color 05
-echo Downloading fallback script...
-title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Downloading fallback script...
-curl -L --progress-bar "%fallbackURL%" -o "%fallbackScript%"
-if not exist "%fallbackScript%" (
-    color 04
-    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Error: Failed to download fallback script.
-    echo Error: Failed to download fallback script.
-    timeout /t 5 >nul
-    exit /b
-)
-color 05
-title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Fallback script downloaded. Executing fallback script...
-echo Fallback script downloaded. Executing fallback script...
-timeout /t 2 >nul
-call "%fallbackScript%"
-exit /b
+exit /b 0
