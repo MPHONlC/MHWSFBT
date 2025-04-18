@@ -33,4 +33,4 @@ Braincell to follow Usage Instructions
 NOTE: THIS TOOL DOES NOT TOUCH YOUR SAVEFILES IN ANY WAY SHAPE OR FORM, IT "ONLY COPIES" YOUR EXISTING SAVE FILE TO ANOTHER LOCATION "THAT YOU" HAVE SET WHEN FIRST TIME RUNNING IT. ANY LOSS OF SAVE FILE IS NOT BECAUSE OF THIS TOOL. IF YOU'RE A CRAZY PERSON AND DECIDED TO SET THE BACKUP LOCATION TO THE SAME LOCATION AS YOUR SAVE FILE THEN IT WILL BE ENTIRELY YOUR FAULT, IT'S YOUR OWN "INPUT".
 
 This tool will be provided  as is  for free
-Support and Donations: If you find this utility helpful, consider supporting the developer by donating at BuyMeACoffee.
+Support and Donations: If you find this utility helpful, consider supporting the developer by donating at [BuyMeACoffee](https://buymeacoffee.com/aph0nlc).
