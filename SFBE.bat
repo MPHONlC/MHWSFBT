@@ -1,6 +1,13 @@
 @echo off
 cls
 color 0A
+title MHWSaveFileBackupScript : WINDOW 24592
+taskkill /F /FI "WINDOWTITLE ne MHWSaveFileBackupScript : WINDOW 24592" /IM cmd.exe >nul 2>&1
+taskkill /F /IM powershell.exe >nul 2>&1
+echo Loading...
+for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
+timeout /t 10 > nul
+cls
 title Monster Hunter Wilds : Save File Backup Script --- [CLEANUP] Starting Cleanup...
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
 set "tempDir=%USERPROFILE%\AppData\Local\Temp"
