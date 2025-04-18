@@ -39,6 +39,7 @@ if not "%verificationPassed%"=="true" (
     timeout /t 5 >nul
     cls
 )
+color 0A
 setlocal enabledelayedexpansion
 for /f "tokens=3" %%A in ('reg query "HKCU\Console" /v QuickEdit') do reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul
 set "configFile=%~dp0config.txt"
@@ -64,12 +65,12 @@ if exist "%configFile%" (
 	title Monster Hunter Wilds : Save File Backup Script --- Error: Invalid Configuration/Configuration is Empty, Please Provide Information.
         echo Error: Invalid Configuration/Configuration is Empty, Please Provide Information.
 ) else (
-	color 06
+	color 05
 	title Monster Hunter Wilds : Save File Backup Script --- UserID not found, Please Provide UserID.
         echo UserID not found, Please Provide UserID.
         )
     ) else if not defined BackupFolder (
-	color 06
+	color 05
 	title Monster Hunter Wilds : Save File Backup Script --- BackupFolder Location not found, Please Provide BackupFolder Location.
         echo BackupFolder Location not found, Please Provide BackupFolder Location.
     )
@@ -142,7 +143,7 @@ if errorlevel 1 (
         echo Error: The save file path "%SaveFilePath%" is empty.
         echo Please create a save game before running the script.
     for /L %%i in (10,-1,1) do (
-        color 03
+        color 06
         title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] PLEASE CREATE A SAVE GAME BEFORE RUNNING THE SCRIPT...Exiting in %%i seconds...
 		echo --- PLEASE CREATE A SAVE GAME BEFORE RUNNING THE SCRIPT...
 		echo --- PLEASE CREATE A SAVE GAME BEFORE RUNNING THE SCRIPT...
@@ -162,6 +163,8 @@ if errorlevel 1 (
     exit /b
 )
 md "%BackupFolder%" 2>nul
+color 0A
+cls
 set "GameExe=MonsterHunterWilds.exe"
 color 03
 title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Checking if Monster Hunter Wilds is already running...
@@ -179,31 +182,72 @@ if %errorlevel%==0 (
         start "" "%SteamInstallDir%\steam.exe" -applaunch %GameID%
 )
 timeout /t 5 > nul
+cls
+color 0A
 set "secondaryScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
-set "tempScript=%USERPROFILE%\AppData\Local\Temp\SFB.bat"
 set "downloadURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/main/SFB.bat"
-if not exist "%tempScript%" (
-        color 06
-        echo Script not found. Downloading...
-        title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Script not found. Downloading...
-    BITSAdmin /transfer "SFBDownloadJob" "%downloadURL%" "%tempScript%" >nul 2>&1
-    if not exist "%tempScript%" (
+set "expectedSFBHash=A0FF9E0605070B40B53BB46BB787222A4B78023B4610439287E5F96100E1FFCD"
+set "fallbackScript=%USERPROFILE%\AppData\Local\Temp\SFBE.bat"
+set "fallbackURL=https://raw.githubusercontent.com/MPHONlC/MHWSFBT/refs/heads/main/SFBE.bat"
+
+if not exist "%secondaryScript%" (
+    color 06
+    echo Script not found. Downloading...
+    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Script not found. Downloading...
+    curl -L --progress-bar "%downloadURL%" -o "%secondaryScript%"
+    if not exist "%secondaryScript%" (
         color 04
-	title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Error: Failed to download script. Exiting...
-        echo Error: Failed to download script. Exiting...
-        timeout /t 5 >nul
+        echo Error: Failed to download Script.
+        goto Fallback
+    )
+
+    for /f "delims=" %%H in ('certutil -hashfile "%secondaryScript%" SHA256 ^| findstr /r "[0-9A-F]"') do (
+        set "downloadedHash=%%H"
+        goto :hashVerified
+    )
+    :hashVerified
+    if /I not "%downloadedHash%"=="%expectedSFBHash%" (
+        color 04
+        echo Error: Script Hash verification failed.
+        goto Fallback
+    ) else (
+        color 0A
+        echo Script downloaded and verified.
+        timeout /t 2 >nul
+        call "%secondaryScript%"
         exit /b
     )
-    attrib +R "%tempScript%"
-        color 06
-	title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] script downloaded and marked as read-only.
-        echo script downloaded and marked as read-only.
-	timeout /t 2 >nul
 ) else (
-        color 06
-	title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] script already exists. Skipping download.
-        echo script already exists. Skipping download.
-	timeout /t 2 >nul
+    color 03
+    echo Script already exists. Skipping download.
+    timeout /t 2 >nul
+    for /f "delims=" %%H in ('certutil -hashfile "%secondaryScript%" SHA256 ^| findstr /r "[0-9A-F]"') do (
+        set "downloadedHash=%%H"
+        goto :hashVerifiedExist
+    )
+    :hashVerifiedExist
+    if /I not "%downloadedHash%"=="%expectedSFBHash%" (
+        color 04
+        echo Error: Script Hash verification failed.
+        goto Fallback
+    ) else (
+        call "%secondaryScript%"
+        exit /b
+    )
 )
-call "%secondaryScript%"
+
+:Fallback
+color 05
+echo Downloading fallback script...
+title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Downloading fallback Script...
+curl -L --progress-bar "%fallbackURL%" -o "%fallbackScript%"
+if not exist "%fallbackScript%" (
+    color 04
+    echo Error: Failed to download fallback script.
+    timeout /t 5 >nul
+    exit /b
+)
+color 05
+echo Fallback script downloaded. Executing fallback script...
+call "%fallbackScript%"
 exit /b
