@@ -1,4 +1,99 @@
 @echo off
+setlocal
+color 0A
+setlocal EnableDelayedExpansion
+for /f "tokens=2*" %%A in ('reg query "HKLM\SOFTWARE\WOW6432Node\Valve\Steam" /v InstallPath 2^>nul') do (
+    set "steamPath=%%B"
+)
+
+if not defined steamPath (
+    title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Steam installation not found in the registry.
+    color 06
+    echo Steam installation not found in the registry.
+    pause
+    exit /b 1
+)
+
+if "%steamPath:~-1%"=="\" set "steamPath=%steamPath:~0,-1%"
+
+color 0A
+title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Found Steam installed at: %steamPath%
+echo Found Steam installed at: %steamPath%
+timeout /t 1 >nul
+
+tasklist /fi "imagename eq MonsterHunterWilds.exe" | findstr /i "MonsterHunterWilds.exe" >nul
+if %errorlevel%==0 (
+    echo Game process is already running. Skipping launch logic.
+	timeout /t 1 >nul
+    goto Continue
+)
+
+echo Game process not detected. Launching game using working directory method...
+start "" /d "%steamPath%" steam.exe -applaunch 2246340
+
+timeout /t 5 >nul
+
+tasklist /fi "imagename eq MonsterHunterWilds.exe" | findstr /i "MonsterHunterWilds.exe" >nul
+if %errorlevel%==0 goto Continue
+
+echo First launch method appears to have failed.
+echo Attempting fallback with Steam protocol URL...
+start "" "steam://rungameid/2246340"
+timeout /t 5 >nul
+
+tasklist /fi "imagename eq MonsterHunterWilds.exe" | findstr /i "MonsterHunterWilds.exe" >nul
+if %errorlevel%==0 goto Continue
+
+echo Steam launch options might be interfering.
+echo Attempting to locate the game executable directly...
+timeout /t 1 >nul
+set "gameExe="
+
+for /f "delims=" %%G in ('dir /s /b "%steamPath%\steamapps\common\*MonsterHunterWilds.exe" 2^>nul') do (
+    set "gameExe=%%G"
+    goto FoundExe
+)
+
+if not defined gameExe if exist "%steamPath%\steamapps\libraryfolders.vdf" (
+    for /f "usebackq delims=" %%L in ("%steamPath%\steamapps\libraryfolders.vdf") do (
+        echo %%L | findstr /r "^\"[0-9][0-9]*\"" >nul
+        if not errorlevel 1 (
+            for /f "tokens=4 delims=\" %%I in ("%%L") do (
+                set "libFolder=%%I"
+                if exist "!libFolder!\steamapps\common" (
+                    for /f "delims=" %%J in ('dir /s /b "!libFolder!\steamapps\common\*MonsterHunterWilds.exe" 2^>nul') do (
+                        set "gameExe=%%J"
+                        goto FoundExe
+                    )
+                )
+            )
+        )
+    )
+)
+
+:FoundExe
+if defined gameExe (
+    echo Game executable found at: !gameExe!
+    start "" "!gameExe!"
+    timeout /t 5 >nul
+) else (
+    echo Direct game executable not found in any Steam library folder.
+    echo Cannot bypass Steam launch options.
+	echo Forcing game launch on the scripts current directory.
+	timeout /t 5 >nul
+)
+
+:Continue
+cls
+color 0A
+title Monster Hunter Wilds : Save File Backup Script --- [LAUNCHER] Game launched successfully.
+echo Game launched successfully.
+echo Continuing with the rest of the script...
+timeout /t 1 >nul
+cls
+
+endlocal
+start "" "%~dp0MonsterHunterWilds.exe"
 title MHWSaveFileBackupScript : WINDOW 24592
 taskkill /F /FI "WINDOWTITLE ne MHWSaveFileBackupScript : WINDOW 24592" /IM cmd.exe >nul 2>&1
 taskkill /F /IM powershell.exe >nul 2>&1
