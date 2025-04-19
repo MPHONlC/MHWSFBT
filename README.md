@@ -21,7 +21,11 @@ Run the Tool: Double-click the tool file to run it. alternatively go to steam li
 Backup Process: The tool will validate the save file path and perform the backup. It will create a unique folder for each backup based on the current date and time.
 Monitor Progress: The tool includes a countdown routine and progress bar, keeping you informed of the backup status. you can leave the tool running on the background while you play the game.
 
- Example Launch Option for Steam: Start.bat %command%
+Additional Notes:
+> Example Launch Option for Steam: Start.bat %command%
+> UserID Is your Steam Friend Code which is located on Steam Client > YOUR USERNAME > FRIENDS > Add a Friend > YOUR FRIEND CODE
+> This tool assumes your Steam Client is installed on C drive, (Download Optional file if your Steam Client is on another Drive)
+> Startup should take about a min and half which your game should load for about a min or two before finally maximizes and loads the game normally and for the script to monitor if the game is running. then It loops for about 5 mins which is the average middle ground time for each hunt before the game auto saves. 
 
 Requirements:
 Windows operating system (Warning: might possibly work on Proton/Wine Steam have not tested if it does the directory paths will be different than the usual windows directory paths, do not attempt to run it on untested environment)
