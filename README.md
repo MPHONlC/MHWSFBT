@@ -3,7 +3,7 @@ Automated Save File Backup Tool for Monster Hunter Wilds
 Description: Automated Save File Backup Tool for Monster Hunter Wilds is designed to automate the backup process for your game save files. 
 This ensures that your progress in Monster Hunter Wilds is safely backed up to a specified folder, preventing any loss of data due to unexpected issues.
 
-[NEXUS MODS LINK](https://www.nexusmods.com/monsterhunterwilds/mods/1874)
+(THIS WILL BE DISCONTINUED AND WILL NOT BE UPDATED, THE SCRIPT WILL CONTINUE WORKING AS IS AND NO CHANGES OR FEATURES WILL BE ADDED)
 
 Features:
 Automatic Backup: The tool automatically backs up your save files from the Steam directory to a designated backup folder.
